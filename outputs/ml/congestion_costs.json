@@ -1,0 +1,17 @@
+{
+  "scenario_id": "congestion",
+  "link_costs": [
+    {
+      "flow_id": 1,
+      "src_node": 0,
+      "dst_node": 6,
+      "predicted_cost": 2056.9369
+    },
+    {
+      "flow_id": 2,
+      "src_node": 6,
+      "dst_node": 0,
+      "predicted_cost": 2056.9369
+    }
+  ]
+}

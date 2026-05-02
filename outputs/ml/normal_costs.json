@@ -1,0 +1,11 @@
+{
+  "scenario_id": "normal",
+  "link_costs": [
+    {
+      "flow_id": 1,
+      "src_node": 0,
+      "dst_node": 6,
+      "predicted_cost": 2056.3642
+    }
+  ]
+}
