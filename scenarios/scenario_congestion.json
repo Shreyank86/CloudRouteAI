@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "scenario_id": "congestion",
+  "num_nodes": 8,
+  "simulation_time": 20.0,
+  "traffic_type": "udp",
+  "traffic_flows": [
+    {
+      "src_node": 0,
+      "dst_node": 7,
+      "data_rate_mbps": 10.0
+    }
+  ],
+  "link_events": [
+    {
+      "type": "bottleneck",
+      "link": [3, 4],
+      "capacity_mbps": 1.0
+    }
+  ]
+}
