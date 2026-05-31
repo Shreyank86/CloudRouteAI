@@ -23,13 +23,30 @@ It demonstrates a "self-healing" network capable of monitoring link telemetry, p
 ## 🛠️ Installation & Execution
 
 ### Dependencies
-Ensure you have the following installed on your Linux (Ubuntu/WSL) environment:
-- **NS-3** (ns-3.39 or similar)
-- **Python 3.10+**
-- **Python Packages**: `scikit-learn`, `numpy`, `streamlit`, `plotly`, `networkx`
-  ```bash
-  pip3 install scikit-learn numpy streamlit plotly networkx
-  ```
+
+#### System Requirements
+- **Linux Environment** (Ubuntu 22.04+ or WSL2 recommended)
+- **C++ Toolchain**: GCC 11.1+ or Clang 17+ (supporting C++23 standard)
+- **CMake**: version 3.20 or later
+- **Python**: version 3.10 or later
+- **NS-3**: version `ns-3-dev` or `ns-3.39` or later.
+  > [!NOTE]
+  > The simulation runner script expects the NS-3 directory to be located at `~/ns-3-dev` (i.e. `/home/username/ns-3-dev`). If your NS-3 installation is elsewhere, you can create a symbolic link (e.g. `ln -s /path/to/your/ns3 ~/ns-3-dev`) or edit `NS3_DIR` in `ns3_simulation/run_simulation.sh`.
+
+#### Python Libraries
+Install the python libraries using the provided `requirements.txt`:
+```bash
+pip3 install -r requirements.txt
+```
+The project has been tested with the following suitable versions:
+- `streamlit` (`>=1.30.0, <2.0.0`)
+- `plotly` (`>=5.0.0, <7.0.0`)
+- `networkx` (`>=3.0, <4.0`)
+- `pandas` (`>=2.0.0, <3.0.0`)
+- `lxml` (`>=4.0.0, <5.0.0`)
+- `numpy` (`>=1.20.0, <2.0.0`)
+- `scipy` (`>=1.7.0, <2.0.0`)
+- `scikit-learn` (`>=1.0.0, <2.0.0`)
 
 ### Running the End-to-End Pipeline
 We have automated the entire project execution. You do not need to run individual files. Simply execute the master script:
