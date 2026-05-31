@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "scenario_id": "failure",
+  "num_nodes": 10,
+  "simulation_time": 20.0,
+  "traffic_type": "udp",
+  "packet_size": 1024,
+  "traffic_flows": [
+    {
+      "src_node": 0,
+      "dst_node": 7,
+      "packet_rate": 200
+    }
+  ],
+  "link_events": [
+    {
+      "type": "failure",
+      "link": [3, 4],
+      "time": 8.0
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "scenario_id": "congestion",
+  "runs": [
+    {
+      "run_timestamp": "2026-05-31T13:30:38+0530",
+      "timestamp": 1780214438.975097,
+      "flows": [
+        {
+          "flow_id": 1,
+          "src_node": 0,
+          "dst_node": 7,
+          "latency_ms": 167.45599999999996,
+          "throughput_mbps": 1.0638400000000001,
+          "packet_loss_rate": 0.790137,
+          "tx_packets": 3800.0,
+          "rx_packets": 797.4794,
+          "jitter_ms": 0.5,
+          "queue_delay_ms": 0.0
+        }
+      ]
+    },
+    {
+      "run_timestamp": "2026-05-31T13:30:38+0530",
+      "timestamp": 1780214438.9751008,
+      "flows": [
+        {
+          "flow_id": 1,
+          "src_node": 0,
+          "dst_node": 7,
+          "latency_ms": 38.784000000000006,
+          "throughput_mbps": 1.5745600000000004,
+          "packet_loss_rate": 0.087793,
+          "tx_packets": 3800.0,
+          "rx_packets": 3466.3866,
+          "jitter_ms": 0.3,
+          "queue_delay_ms": 0.0
+        }
+      ]
+    }
+  ]
+}

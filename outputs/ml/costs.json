@@ -1,0 +1,605 @@
+{
+  "classified_scenario": "congestion",
+  "snapshots": [
+    {
+      "timestamp": 2.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 31.22
+        }
+      ]
+    },
+    {
+      "timestamp": 4.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 6.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 8.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 10.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 12.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 14.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 16.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 18.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    },
+    {
+      "timestamp": 20.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "routing_cost": 32.61
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "routing_cost": 8142.6
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "routing_cost": 31.22
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "routing_cost": 28.95
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "routing_cost": 29.02
+        }
+      ]
+    }
+  ]
+}

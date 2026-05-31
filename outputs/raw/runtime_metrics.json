@@ -1,0 +1,1268 @@
+{
+  "version": "1.0",
+  "scenario_id": "congestion",
+  "monitoring_interval_sec": 2.0,
+  "num_snapshots": 10,
+  "snapshots": [
+    {
+      "timestamp": 2.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1638,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 5.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1638,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0013,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0013,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0013,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 4.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1638,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.87793,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0013,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0013,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0013,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 6.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 8.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 10.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 12.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 14.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 16.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 18.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    },
+    {
+      "timestamp": 20.0,
+      "links": [
+        {
+          "source": 0,
+          "destination": 1,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 1,
+          "destination": 2,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 2,
+          "destination": 3,
+          "delay_ms": 5.0,
+          "throughput_mbps": 0.02,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.002,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "delay_ms": 173.84,
+          "throughput_mbps": 1.0,
+          "packet_loss": 0.847876,
+          "queue_utilization": 1.0,
+          "link_utilization": 1.0,
+          "queue_packets": 20,
+          "queue_max": 20
+        },
+        {
+          "source": 4,
+          "destination": 5,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.0819,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 5,
+          "destination": 6,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 6,
+          "destination": 7,
+          "delay_ms": 0.5,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.041,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 2,
+          "destination": 8,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 8,
+          "destination": 9,
+          "delay_ms": 2.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 200
+        },
+        {
+          "source": 9,
+          "destination": 4,
+          "delay_ms": 8.0,
+          "throughput_mbps": 1.6384,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.0,
+          "link_utilization": 0.1092,
+          "queue_packets": 0,
+          "queue_max": 100
+        },
+        {
+          "source": 10,
+          "destination": 3,
+          "delay_ms": 1.8192,
+          "throughput_mbps": 6.5736,
+          "packet_loss": 0.0,
+          "queue_utilization": 0.01,
+          "link_utilization": 0.6574,
+          "queue_packets": 1,
+          "queue_max": 100
+        }
+      ]
+    }
+  ]
+}

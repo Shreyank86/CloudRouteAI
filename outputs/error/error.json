@@ -1,0 +1,8 @@
+{
+  "module": "m2",
+  "scenario_id": "spike",
+  "error_code": 101,
+  "message": "Input missing: /home/shreyankdk/Desktop/cloudroute-ai-final/outputs/raw/spike_flow.xml",
+  "timestamp": 1778169349.6229038,
+  "version": "1.0"
+}
