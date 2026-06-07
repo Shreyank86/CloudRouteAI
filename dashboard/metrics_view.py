@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
+import theme_engine as te
 
 def draw_metrics_chart(runtime_data):
     """Plot runtime metrics (Queue, Throughput, Loss) across all links."""
@@ -33,16 +34,12 @@ def draw_metrics_chart(runtime_data):
         fig_thru.add_trace(go.Scatter(
             x=df["Time"], y=df["Throughput"], 
             fill='tozeroy', mode='lines', 
-            name='Throughput', line=dict(color='#3b82f6', width=3)
+            name='Throughput', line=dict(color=te.CHART_COLORS["primary"], width=3)
         ))
-        fig_thru.update_layout(
-            title="Aggregate Network Throughput (Mbps)",
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#94a3b8'), height=300,
-            margin=dict(l=0, r=0, t=40, b=0),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
-        )
+        
+        layout_thru = te.chart_theme()
+        layout_thru.update(title="Aggregate Network Throughput (Mbps)", height=300)
+        fig_thru.update_layout(layout_thru)
         st.plotly_chart(fig_thru, use_container_width=True)
 
     with col2:
@@ -50,21 +47,17 @@ def draw_metrics_chart(runtime_data):
         fig_health.add_trace(go.Scatter(
             x=df["Time"], y=df["Loss"], 
             mode='lines+markers', name='Loss (%)',
-            line=dict(color='#ef4444', width=2)
+            line=dict(color=te.CHART_COLORS["danger"], width=2)
         ))
         fig_health.add_trace(go.Scatter(
             x=df["Time"], y=df["Utilization"], 
             mode='lines+markers', name='Util (%)',
-            line=dict(color='#10b981', width=2)
+            line=dict(color=te.CHART_COLORS["success"], width=2)
         ))
-        fig_health.update_layout(
-            title="Network Health Indicators",
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#94a3b8'), height=300,
-            margin=dict(l=0, r=0, t=40, b=0),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
-        )
+        
+        layout_health = te.chart_theme()
+        layout_health.update(title="Network Health Indicators", height=300)
+        fig_health.update_layout(layout_health)
         st.plotly_chart(fig_health, use_container_width=True)
 
 def draw_link_details(runtime_data, timestamp):
@@ -82,28 +75,29 @@ def draw_link_details(runtime_data, timestamp):
         st.info("No active links in this snapshot.")
         return
 
-    # Create a nice table or list of cards
+    # Create a nice list of themed cards
     for link in links:
         src, dst = link["source"] + 1, link["destination"] + 1
         thru = link.get("throughput_mbps", 0)
         loss = link.get("packet_loss", 0) * 100
         util = link.get("link_utilization", 0) * 100
         
-        status_color = "#10b981" # Healthy
-        if loss > 5 or util > 80: status_color = "#f97316" # Warning
-        if loss > 15: status_color = "#ef4444" # Critical
+        status_color = te.COLORS["accent_3"] # Healthy
+        if loss > 5 or util > 80: status_color = te.COLORS["warning"] # Warning
+        if loss > 15: status_color = te.COLORS["danger"] # Critical
 
         st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.3); padding: 0.8rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid {status_color};">
+        <div style="background: rgba(13, 27, 46, 0.4); padding: 0.8rem; border-radius: 10px; margin-bottom: 0.5rem; border-left: 3px solid {status_color}; border-top: 1px solid rgba(0, 212, 255, 0.05); border-right: 1px solid rgba(0, 212, 255, 0.05); border-bottom: 1px solid rgba(0, 212, 255, 0.05);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600;">Link {src} → {dst}</span>
-                <span style="color: {status_color}; font-size: 0.8rem; font-weight: 700;">{thru:.2f} Mbps</span>
+                <span style="font-weight: 600; font-family: var(--font-display); color: var(--text-primary);">Link {src} → {dst}</span>
+                <span style="color: {status_color}; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;">{thru:.2f} Mbps</span>
             </div>
-            <div style="display: flex; gap: 1rem; margin-top: 0.4rem; font-size: 0.75rem; color: #94a3b8;">
-                <span>Loss: {loss:.1f}%</span>
-                <span>Util: {util:.1f}%</span>
-                <span>Delay: {link.get('delay_ms', 0):.1f}ms</span>
+            <div style="display: flex; gap: 1rem; margin-top: 0.4rem; font-size: 0.75rem; color: var(--text-muted);">
+                <span>Loss: <strong style="color: var(--text-primary);">{loss:.1f}%</strong></span>
+                <span>Util: <strong style="color: var(--text-primary);">{util:.1f}%</strong></span>
+                <span>Delay: <strong style="color: var(--text-primary);">{link.get('delay_ms', 0):.1f}ms</strong></span>
             </div>
         </div>
         """, unsafe_allow_html=True)
+
 

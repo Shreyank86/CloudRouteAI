@@ -4,6 +4,7 @@ import heapq
 import sys
 import os
 import json
+from datetime import datetime
 from context_engine import FutureEventRepository, ContextAwareValidationLayer, DecisionIntelligenceModule
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,6 +14,71 @@ RAW_DIR = os.path.join(BASE_DIR, "outputs", "raw")
 ML_DIR = os.path.join(BASE_DIR, "outputs", "ml")
 ROUTING_DIR = os.path.join(BASE_DIR, "outputs", "routing")
 PROCESSED_DIR = os.path.join(BASE_DIR, "outputs", "processed")
+LIVE_DIR = os.path.join(BASE_DIR, "outputs", "live")
+LIVE_LOG_FILE = os.path.join(LIVE_DIR, "live_telemetry_log.jsonl")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Persistent Live Telemetry Helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+def append_live_snapshot(sim):
+    """Append one JSON record to the persistent live telemetry log."""
+    os.makedirs(LIVE_DIR, exist_ok=True)
+    state = sim.get_state()
+    links = state["links"]
+
+    # Aggregate KPIs from current link states
+    active_links = [l for l in links if l["capacity"] > 0]
+    if not active_links:
+        return
+
+    avg_loss = sum(l["loss"] for l in active_links) / len(active_links) * 100
+    avg_util = sum(l["throughput"] / l["capacity"] for l in active_links) / len(active_links) * 100
+    total_thr = sum(l["throughput"] for l in active_links)
+    peak_cong = max(l["queue"] for l in active_links) * 100
+
+    record = {
+        "timestamp": float(sim.time_step * 2.0),
+        "wall_time": datetime.utcnow().isoformat(),
+        "avg_packet_loss_pct": round(avg_loss, 4),
+        "avg_utilization_pct": round(avg_util, 4),
+        "total_throughput_mbps": round(total_thr, 4),
+        "peak_congestion_pct": round(peak_cong, 4),
+        "flows": {
+            fid: {
+                "volume": f["volume"],
+                "status": f.get("status", "Idle"),
+            }
+            for fid, f in sim.flows.items()
+        },
+    }
+
+    with open(LIVE_LOG_FILE, "a") as fh:
+        fh.write(json.dumps(record) + "\n")
+
+
+def clear_live_log():
+    """Truncate the live telemetry log file to zero bytes."""
+    os.makedirs(LIVE_DIR, exist_ok=True)
+    with open(LIVE_LOG_FILE, "w") as fh:
+        pass  # truncate
+
+
+def load_live_log():
+    """Return all records from the live telemetry log as a list of dicts."""
+    if not os.path.exists(LIVE_LOG_FILE):
+        return []
+    records = []
+    with open(LIVE_LOG_FILE, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if line:
+                try:
+                    records.append(json.loads(line))
+                except json.JSONDecodeError:
+                    pass
+    return records
 
 class LiveNetworkSimulator:
     def __init__(self):
@@ -522,3 +588,22 @@ class LiveNetworkSimulator:
             "flows": self.flows,
             "links": [{"src": k[0], "dst": k[1], **v} for k, v in self.link_states.items()]
         }
+
+    def get_aggregate_metrics(self):
+        """Return real-time aggregated KPI values from the current link states.
+        Returns (avg_loss_pct, avg_util_pct, total_throughput_mbps, peak_congestion_pct).
+        Returns (0, 0, 0, 0) if no data yet.
+        """
+        if self.time_step == 0:
+            return 0.0, 0.0, 0.0, 0.0
+        active = [
+            v for v in self.link_states.values()
+            if v["capacity"] > 0
+        ]
+        if not active:
+            return 0.0, 0.0, 0.0, 0.0
+        avg_loss = sum(s["loss"] for s in active) / len(active) * 100
+        avg_util = sum(s["throughput"] / s["capacity"] for s in active) / len(active) * 100
+        total_thr = sum(s["throughput"] for s in active)
+        peak_cong = max(s["queue"] for s in active) * 100
+        return avg_loss, avg_util, total_thr, peak_cong

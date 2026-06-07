@@ -1,6 +1,8 @@
 import streamlit as st
 import plotly.graph_objects as go
 from dash_utils import load_processed_metrics
+from live_engine import load_live_log
+import theme_engine as te
 
 def draw_comparison():
     """Compare Base vs Adaptive Routing performance metrics with premium visuals."""
@@ -57,31 +59,142 @@ def draw_comparison():
     # Display improvement cards
     cols = st.columns(3)
     for i, (m, imp) in enumerate(zip(metrics, improvements)):
-        color = "#10b981" if imp >= 0 else "#ef4444"
-        arrow = "↑" if imp >= 0 else "↓"
+        color = te.COLORS["accent_3"] if imp >= 0 else te.COLORS["danger"]
+        arrow = "▲" if imp >= 0 else "▼"
+        icon = "📈" if imp >= 0 else "📉"
         with cols[i]:
-            st.markdown(f"""
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid {color}; padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                <div style="color: #94a3b8; font-size: 0.8rem; text-transform: uppercase;">{m} Delta</div>
-                <div style="color: {color}; font-size: 1.5rem; font-weight: 700;">{arrow} {abs(imp):.1f}%</div>
-            </div>
-            """, unsafe_allow_html=True)
+            te.metric_card(
+                title=f"{m} Delta",
+                value=f"{arrow} {abs(imp):.1f}%",
+                icon=icon,
+                color=color,
+                idx=i
+            )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     fig = go.Figure(data=[
-        go.Bar(name='Static (Base)', x=metrics, y=base_vals, marker_color='#1e293b', opacity=0.8),
-        go.Bar(name='Adaptive (AI)', x=metrics, y=curr_vals, marker_color='#3b82f6')
+        go.Bar(name='Static (Base)', x=metrics, y=base_vals, marker_color=te.CHART_COLORS["muted"], opacity=0.8),
+        go.Bar(name='Adaptive (AI)', x=metrics, y=curr_vals, marker_color=te.CHART_COLORS["primary"])
     ])
     
-    fig.update_layout(
+    layout = te.chart_theme()
+    layout.update(
         barmode='group', height=400,
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#94a3b8'),
-        margin=dict(l=0, r=0, t=30, b=0),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
+    fig.update_layout(layout)
     st.plotly_chart(fig, use_container_width=True)
 
+
+def draw_live_telemetry_chart():
+    """Render persistent live session telemetry trends from the JSONL log file."""
+    st.markdown("---")
+    st.markdown("### 🔴 Live Session Telemetry Trends")
+    st.markdown(
+        "<p style='color:var(--text-muted); font-size:0.85rem; margin-top:-0.5rem;'>"
+        "Real-time data recorded from every Live Simulator step. Persists across page refreshes. "
+        "Use the <b>🗑️ Clear Telemetry Log</b> button in the True LIVE Simulator tab to reset."
+        "</p>",
+        unsafe_allow_html=True,
+    )
+
+    records = load_live_log()
+
+    if not records:
+        st.info(
+            "💡 No live telemetry recorded yet. "
+            "Start the **⚡ True LIVE Simulator** tab, inject traffic, and press ▶️ Start."
+        )
+        return
+
+    import pandas as pd
+
+    df = pd.DataFrame(records)
+    df = df.sort_values("timestamp").reset_index(drop=True)
+
+    # ── Summary KPI Row ───────────────────────────────────────────────────────
+    total_steps = len(df)
+    peak_loss = df["avg_packet_loss_pct"].max()
+    peak_thr = df["total_throughput_mbps"].max()
+    peak_cong = df["peak_congestion_pct"].max()
+    last_t = df["timestamp"].iloc[-1]
+
+    kpi_cols = st.columns(4)
+    with kpi_cols[0]:
+        te.metric_card("Steps Recorded", str(total_steps), icon="📊", color=te.COLORS["accent_1"], idx=10)
+    with kpi_cols[1]:
+        te.metric_card("Peak Loss", f"{peak_loss:.2f}%", icon="📉", color=te.COLORS["danger"], idx=11)
+    with kpi_cols[2]:
+        te.metric_card("Peak Throughput", f"{peak_thr:.1f} Mbps", icon="⚡", color=te.COLORS["success"], idx=12)
+    with kpi_cols[3]:
+        te.metric_card("Last Sim Time", f"{last_t:.0f} s", icon="⏱️", color=te.COLORS["accent_2"], idx=13)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Time-Series Chart ─────────────────────────────────────────────────────
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=df["timestamp"], y=df["avg_packet_loss_pct"],
+        name="Avg Packet Loss (%)",
+        mode="lines+markers",
+        line=dict(color=te.CHART_COLORS.get("danger", "#ef4444"), width=2),
+        marker=dict(size=5),
+        yaxis="y1",
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=df["timestamp"], y=df["avg_utilization_pct"],
+        name="Network Load (%)",
+        mode="lines+markers",
+        line=dict(color=te.CHART_COLORS.get("primary", "#3b82f6"), width=2),
+        marker=dict(size=5),
+        yaxis="y1",
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=df["timestamp"], y=df["peak_congestion_pct"],
+        name="Peak Congestion (%)",
+        mode="lines+markers",
+        line=dict(color=te.CHART_COLORS.get("warning", "#f59e0b"), width=2, dash="dot"),
+        marker=dict(size=5),
+        yaxis="y1",
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=df["timestamp"], y=df["total_throughput_mbps"],
+        name="Total Throughput (Mbps)",
+        mode="lines+markers",
+        line=dict(color=te.CHART_COLORS.get("accent", "#00ff88"), width=2),
+        marker=dict(size=5),
+        yaxis="y2",
+    ))
+
+    layout = te.chart_theme()
+    layout.update(
+        height=440,
+        xaxis=dict(title="Simulation Time (s)"),
+        yaxis=dict(title="Percentage (%)", side="left", rangemode="tozero"),
+        yaxis2=dict(
+            title="Throughput (Mbps)",
+            overlaying="y",
+            side="right",
+            showgrid=False,
+            rangemode="tozero",
+        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    fig.update_layout(layout)
+    st.plotly_chart(fig, use_container_width=True)
+
+    # ── Raw log download ──────────────────────────────────────────────────────
+    import json
+    raw_json = json.dumps(records, indent=2)
+    st.download_button(
+        label="📥 Download Live Telemetry Log (JSON)",
+        data=raw_json,
+        file_name="live_telemetry_log.json",
+        mime="application/json",
+        key="dl_live_log",
+    )

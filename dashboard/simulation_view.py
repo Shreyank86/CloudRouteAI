@@ -1,45 +1,31 @@
-"""
-CloudRouteAI — Traffic Simulation Lab View
-============================================
-Provides controls to run NetworkX or NS-3 simulations and display results.
-"""
-
 import streamlit as st
 import subprocess
 import time
 from dash_utils import BASE_DIR
 from network_simulator import run_simulation, save_simulation_results, SCENARIO_CONFIG
-
+import theme_engine as te
 
 def draw_simulation_lab(scenario):
     """Render the simulation lab with dual-engine support."""
 
-    st.markdown("""
-    <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; 
-                border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1.5rem;">
-        <h3 style="margin:0; color: #f8fafc;">⚡ Traffic Simulation Lab</h3>
-        <p style="color: #94a3b8; margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-            Run network simulations using the built-in NetworkX engine (instant) or the full NS-3 pipeline.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    te.section_header("Traffic Simulation Lab", "Run network simulations using the built-in NetworkX engine (instant) or the full NS-3 pipeline.", icon="⚡")
 
     # Simulation engine cards
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05)); 
-                    padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(59, 130, 246, 0.3);
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.02)); 
+                    padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(0, 212, 255, 0.3);
                     height: 100%;">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                 <span style="font-size: 1.8rem;">🐍</span>
                 <div>
-                    <div style="font-weight: 700; color: #3b82f6; font-size: 1.1rem;">NetworkX Engine</div>
-                    <div style="color: #94a3b8; font-size: 0.8rem;">Pure Python • Instant Results</div>
+                    <div style="font-weight: 700; color: var(--accent-1); font-size: 1.1rem; font-family: var(--font-display);">NetworkX Engine</div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem;">Pure Python • Instant Results</div>
                 </div>
             </div>
-            <ul style="color: #cbd5e1; font-size: 0.85rem; padding-left: 1.2rem;">
+            <ul style="color: var(--text-primary); font-size: 0.85rem; padding-left: 1.2rem;">
                 <li>Same topology as NS-3 (11 nodes)</li>
                 <li>Dijkstra adaptive routing</li>
                 <li>ML cost computation inline</li>
@@ -65,9 +51,9 @@ def draw_simulation_lab(scenario):
                     classified = costs.get("classified_scenario", "unknown")
 
                     st.markdown(f"""
-                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 1rem;">
-                        <div style="color: #10b981; font-weight: 700; margin-bottom: 0.5rem;">🎯 Analysis Ready</div>
-                        <div style="color: #94a3b8; font-size: 0.85rem;">
+                    <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(0, 255, 136, 0.3); margin-bottom: 1rem;">
+                        <div style="color: var(--accent-3); font-weight: 700; margin-bottom: 0.5rem; font-family: var(--font-display);">🎯 Analysis Ready</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">
                             The network was classified as <b>{classified.upper()}</b>. 
                             New routing decisions ({n_decisions}) have been generated using the ML model.
                         </div>
@@ -75,14 +61,13 @@ def draw_simulation_lab(scenario):
                     """, unsafe_allow_html=True)
 
                     # Show metrics
-
                     cols = st.columns(3)
                     with cols[0]:
-                        st.metric("Snapshots", n_snaps)
+                        te.metric_card("Snapshots", str(n_snaps), icon="📸", color=te.COLORS["accent_1"], idx=0)
                     with cols[1]:
-                        st.metric("Routing Decisions", n_decisions)
+                        te.metric_card("Routing Decisions", str(n_decisions), icon="🧠", color=te.COLORS["accent_2"], idx=1)
                     with cols[2]:
-                        st.metric("Classification", classified.upper())
+                        te.metric_card("Classification", classified.upper(), icon="🏷️", color=te.COLORS["warning"] if "congest" in classified else te.COLORS["success"], idx=2)
 
                     st.session_state.active_tab_label = "⚡ Simulation Lab"
                     st.rerun()
@@ -90,18 +75,18 @@ def draw_simulation_lab(scenario):
                     st.error(f"Simulation error: {str(e)}")
 
     with col2:
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05)); 
-                    padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(139, 92, 246, 0.3);
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(124, 58, 237, 0.02)); 
+                    padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(124, 58, 237, 0.3);
                     height: 100%;">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                 <span style="font-size: 1.8rem;">🔬</span>
                 <div>
-                    <div style="font-weight: 700; color: #8b5cf6; font-size: 1.1rem;">NS-3 Pipeline</div>
-                    <div style="color: #94a3b8; font-size: 0.8rem;">Full C++ Simulation • High Fidelity</div>
+                    <div style="font-weight: 700; color: #8b5cf6; font-size: 1.1rem; font-family: var(--font-display);">NS-3 Pipeline</div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem;">Full C++ Simulation • High Fidelity</div>
                 </div>
             </div>
-            <ul style="color: #cbd5e1; font-size: 0.85rem; padding-left: 1.2rem;">
+            <ul style="color: var(--text-primary); font-size: 0.85rem; padding-left: 1.2rem;">
                 <li>FlowMonitor packet-level metrics</li>
                 <li>NetAnim visualization output</li>
                 <li>ML cost prediction (RandomForest)</li>
@@ -140,38 +125,15 @@ def draw_simulation_lab(scenario):
 
     detail_cols = st.columns(4)
     with detail_cols[0]:
-        st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.4); padding: 1rem; border-radius: 0.75rem; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Traffic Rate</div>
-            <div style="color: #3b82f6; font-size: 1.4rem; font-weight: 700;">{config.get('traffic_rate_pps', 200)}</div>
-            <div style="color: #64748b; font-size: 0.7rem;">packets/sec</div>
-        </div>
-        """, unsafe_allow_html=True)
+        te.metric_card("Traffic Rate", f"{config.get('traffic_rate_pps', 200)} pps", icon="📊", color=te.COLORS["accent_1"], idx=0)
     with detail_cols[1]:
         n_overrides = len(config.get("link_overrides", {}))
-        st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.4); padding: 1rem; border-radius: 0.75rem; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Link Overrides</div>
-            <div style="color: {'#f97316' if n_overrides > 0 else '#10b981'}; font-size: 1.4rem; font-weight: 700;">{n_overrides}</div>
-            <div style="color: #64748b; font-size: 0.7rem;">modified links</div>
-        </div>
-        """, unsafe_allow_html=True)
+        te.metric_card("Link Overrides", f"{n_overrides} links", icon="🔗", color=te.COLORS["warning"] if n_overrides > 0 else te.COLORS["success"], idx=1)
     with detail_cols[2]:
         n_events = len(config.get("events", []))
-        st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.4); padding: 1rem; border-radius: 0.75rem; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Events</div>
-            <div style="color: {'#ef4444' if n_events > 0 else '#10b981'}; font-size: 1.4rem; font-weight: 700;">{n_events}</div>
-            <div style="color: #64748b; font-size: 0.7rem;">scheduled</div>
-        </div>
-        """, unsafe_allow_html=True)
+        te.metric_card("Events Scheduled", f"{n_events} events", icon="📅", color=te.COLORS["danger"] if n_events > 0 else te.COLORS["success"], idx=2)
     with detail_cols[3]:
         path_str = "→".join(str(n+1) for n in config.get("initial_path", [0,1,2,3,4,5,6,7]))
         is_alt = config.get("initial_path") == [0,1,2,8,9,4,5,6,7]
-        st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.4); padding: 1rem; border-radius: 0.75rem; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Initial Path</div>
-            <div style="color: {'#8b5cf6' if is_alt else '#3b82f6'}; font-size: 1.4rem; font-weight: 700;">{'ALT' if is_alt else 'PRIMARY'}</div>
-            <div style="color: #64748b; font-size: 0.7rem;">{path_str}</div>
-        </div>
-        """, unsafe_allow_html=True)
+        te.metric_card("Initial Path", f"{'ALT' if is_alt else 'PRIMARY'}", icon="🗺️", color=te.COLORS["accent_2"] if is_alt else te.COLORS["accent_1"], idx=3)
+

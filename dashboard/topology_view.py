@@ -2,6 +2,7 @@ import streamlit as st
 import networkx as nx
 import plotly.graph_objects as go
 from dash_utils import PRIMARY_LINKS, ALT_LINKS, ALL_LINKS, to_display, get_all_costs_at_timestamp
+import theme_engine as te
 
 def draw_topology(timestamp, routing_data, ml_data):
     """Render the network topology using Plotly and NetworkX with premium aesthetics."""
@@ -53,7 +54,7 @@ def draw_topology(timestamp, routing_data, ml_data):
         c2 = costs.get((v-1, u-1), 10.0)
         cost = max(c1, c2)
         
-        color = '#1e293b' # Default dark
+        color = 'rgba(0, 212, 255, 0.15)' # Default idle edge
         width = 2
         dash = 'solid'
         opacity = 0.6
@@ -61,17 +62,17 @@ def draw_topology(timestamp, routing_data, ml_data):
         is_active = tuple(sorted(edge)) in active_edges
         
         if cost > 9000:
-            color = '#ef4444' # Red for failure
+            color = te.COLORS["danger"] # Red for failure
             dash = 'dash'
             width = 3
         elif cost > 100:
-            color = '#f97316' # Orange for congestion
+            color = te.COLORS["warning"] # Orange for congestion
             width = 4
         else:
-            color = '#10b981' # Green for healthy
+            color = 'rgba(0, 255, 136, 0.3)' # Green for healthy idle
             
         if is_active:
-            color = '#3b82f6' if cost < 9000 else '#ef4444'
+            color = te.COLORS["accent_1"] if cost < 9000 else te.COLORS["danger"]
             width = 8
             opacity = 1.0
             
@@ -99,10 +100,10 @@ def draw_topology(timestamp, routing_data, ml_data):
         node_text.append(f"<b>Node {node}</b>")
         
         # Color nodes based on role
-        if node == 1: node_colors.append('#3b82f6') # Source
-        elif node == 8: node_colors.append('#10b981') # Destination
-        elif node == 11: node_colors.append('#f97316') # Congestion source
-        else: node_colors.append('#1e293b') # Router
+        if node == 1: node_colors.append(te.COLORS["accent_1"]) # Source
+        elif node == 8: node_colors.append(te.COLORS["accent_3"]) # Destination
+        elif node == 11: node_colors.append(te.COLORS["warning"]) # Congestion source
+        else: node_colors.append(te.COLORS["bg_elevated"]) # Router
 
     node_trace = go.Scatter(
         x=node_x, y=node_y,
@@ -110,36 +111,36 @@ def draw_topology(timestamp, routing_data, ml_data):
         hoverinfo='text',
         text=[f"Node {n}" for n in G.nodes()],
         textposition="bottom center",
-        textfont=dict(color='#94a3b8', size=10),
+        textfont=dict(color=te.COLORS["text_muted"], size=10, family="var(--font-body)"),
         marker=dict(
             showscale=False,
             color=node_colors,
             size=35,
-            line=dict(color='#f8fafc', width=2),
+            line=dict(color='rgba(0, 212, 255, 0.6)', width=2),
             symbol='circle'
         )
     )
 
     # 5. Render Figure
-    fig = go.Figure(data=edge_traces + [node_trace],
-                    layout=go.Layout(
-                        showlegend=False,
-                        hovermode='closest',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        margin=dict(b=20,l=20,r=20,t=20),
-                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                        height=500,
-                        clickmode='event+select'
-                    ))
+    layout = te.chart_theme()
+    layout.update(
+        showlegend=False,
+        hovermode='closest',
+        margin=dict(b=20,l=20,r=20,t=20),
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        height=500,
+        clickmode='event+select'
+    )
+    fig = go.Figure(data=edge_traces + [node_trace], layout=go.Layout(layout))
                     
     st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     
     # Premium Legend
     cols = st.columns(4)
-    with cols[0]: st.markdown('<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:#3b82f6; border-radius:2px;"></div><span style="font-size:0.8rem; color:#94a3b8;">Active Path</span></div>', unsafe_allow_html=True)
-    with cols[1]: st.markdown('<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:#10b981; border-radius:2px;"></div><span style="font-size:0.8rem; color:#94a3b8;">Healthy Link</span></div>', unsafe_allow_html=True)
-    with cols[2]: st.markdown('<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:#f97316; border-radius:2px;"></div><span style="font-size:0.8rem; color:#94a3b8;">Congested Link</span></div>', unsafe_allow_html=True)
-    with cols[3]: st.markdown('<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:#ef4444; border-radius:2px;"></div><span style="font-size:0.8rem; color:#94a3b8;">Failed Link</span></div>', unsafe_allow_html=True)
+    with cols[0]: st.markdown(f'<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:{te.COLORS["accent_1"]}; border-radius:2px; box-shadow: 0 0 6px {te.COLORS["accent_1"]};"></div><span style="font-size:0.8rem; color:var(--text-muted); font-family:var(--font-display);">Active Path</span></div>', unsafe_allow_html=True)
+    with cols[1]: st.markdown(f'<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:{te.COLORS["accent_3"]}; border-radius:2px; box-shadow: 0 0 6px {te.COLORS["accent_3"]};"></div><span style="font-size:0.8rem; color:var(--text-muted); font-family:var(--font-display);">Healthy Link</span></div>', unsafe_allow_html=True)
+    with cols[2]: st.markdown(f'<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:{te.COLORS["warning"]}; border-radius:2px; box-shadow: 0 0 6px {te.COLORS["warning"]};"></div><span style="font-size:0.8rem; color:var(--text-muted); font-family:var(--font-display);">Congested Link</span></div>', unsafe_allow_html=True)
+    with cols[3]: st.markdown(f'<div style="display:flex; align-items:center; gap:0.5rem;"><div style="width:12px; height:12px; background:{te.COLORS["danger"]}; border-radius:2px; box-shadow: 0 0 6px {te.COLORS["danger"]};"></div><span style="font-size:0.8rem; color:var(--text-muted); font-family:var(--font-display);">Failed Link</span></div>', unsafe_allow_html=True)
+
 

@@ -95,33 +95,33 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
         label = node_labels[nid]
 
         if ntype == "source":
-            color = {"background": "#3b82f6", "border": "#60a5fa", "highlight": {"background": "#2563eb", "border": "#93c5fd"}}
+            color = {"background": "#00d4ff", "border": "#38bdf8", "highlight": {"background": "#00d4ff", "border": "#00d4ff"}}
             icon_char = "📡"
             shape = "dot"
         elif ntype == "destination":
-            color = {"background": "#10b981", "border": "#34d399", "highlight": {"background": "#059669", "border": "#6ee7b7"}}
+            color = {"background": "#00ff88", "border": "#34d399", "highlight": {"background": "#00ff88", "border": "#00ff88"}}
             icon_char = "☁️"
             shape = "dot"
         elif ntype == "junction":
-            color = {"background": "#06b6d4", "border": "#22d3ee", "highlight": {"background": "#0891b2", "border": "#67e8f9"}}
+            color = {"background": "#38bdf8", "border": "#22d3ee", "highlight": {"background": "#38bdf8", "border": "#38bdf8"}}
             icon_char = "🔀"
             shape = "dot"
         elif ntype == "alternate":
-            color = {"background": "#8b5cf6", "border": "#a78bfa", "highlight": {"background": "#7c3aed", "border": "#c4b5fd"}}
+            color = {"background": "#7c3aed", "border": "#a78bfa", "highlight": {"background": "#7c3aed", "border": "#7c3aed"}}
             icon_char = "🔄"
             shape = "dot"
         elif ntype == "congestion":
-            color = {"background": "#f97316", "border": "#fb923c", "highlight": {"background": "#ea580c", "border": "#fdba74"}}
+            color = {"background": "#f59e0b", "border": "#fb923c", "highlight": {"background": "#f59e0b", "border": "#f59e0b"}}
             icon_char = "⚡"
             shape = "dot"
         else:
-            color = {"background": "#1e293b", "border": "#475569", "highlight": {"background": "#334155", "border": "#64748b"}}
+            color = {"background": "#132238", "border": "#00d4ff", "highlight": {"background": "#132238", "border": "#00d4ff"}}
             icon_char = "🖥️"
             shape = "dot"
 
         # Override for failure scenario
         if classified == "failure" and nid == 4:
-            color = {"background": "#ef4444", "border": "#f87171", "highlight": {"background": "#dc2626", "border": "#fca5a5"}}
+            color = {"background": "#ef4444", "border": "#f87171", "highlight": {"background": "#ef4444", "border": "#ef4444"}}
             label = "FAILED_04"
 
         nodes_json.append({
@@ -132,7 +132,7 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
             "color": color,
             "shape": shape,
             "size": 28 if ntype in ["source", "destination", "junction"] else 22,
-            "font": {"color": "#e2e8f0", "size": 11, "face": "Outfit, sans-serif"},
+            "font": {"color": "#e2e8f0", "size": 11, "face": "Exo 2, DM Sans, sans-serif"},
             "borderWidth": 2,
             "shadow": {"enabled": True, "color": color["background"], "size": 15, "x": 0, "y": 0},
             "title": f"<b>Node {nid}</b><br>Type: {ntype.upper()}<br>{icon_char}",
@@ -153,16 +153,16 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
             dashes = True
             width = 2
         elif cost > 100:
-            edge_color = "#f97316"
+            edge_color = "#f59e0b"
             dashes = False
             width = 3
         else:
-            edge_color = "#334155"
+            edge_color = "rgba(0, 255, 136, 0.3)"
             dashes = False
             width = 1
 
         if is_active:
-            edge_color = "#3b82f6" if cost < 9000 else "#ef4444"
+            edge_color = "#00d4ff" if cost < 9000 else "#ef4444"
             width = 5
             dashes = False
 
@@ -175,7 +175,7 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
         edges_json.append({
             "from": u,
             "to": v,
-            "color": {"color": edge_color, "highlight": "#60a5fa", "opacity": 1.0 if is_active else 0.5},
+            "color": {"color": edge_color, "highlight": "#00d4ff", "opacity": 1.0 if is_active else 0.5},
             "width": width,
             "dashes": dashes,
             "smooth": {"type": "curvedCW", "roundness": 0.1} if (u, v) in [(3, 9), (10, 5)] else False,
@@ -194,12 +194,12 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
         <script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"></script>
         <style>
             * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-            body {{ background: transparent; overflow: hidden; font-family: 'Outfit', sans-serif; }}
+            body {{ background: transparent; overflow: hidden; font-family: 'DM Sans', sans-serif; }}
             #network-container {{
                 width: 100%;
                 height: 520px;
-                background: rgba(15, 23, 42, 0.6);
-                border: 1px solid rgba(255,255,255,0.08);
+                background: rgba(5, 13, 26, 0.6);
+                border: 1px solid rgba(0, 212, 255, 0.08);
                 border-radius: 16px;
                 position: relative;
             }}
@@ -215,10 +215,10 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
             #controls button {{
                 width: 36px;
                 height: 36px;
-                background: rgba(30, 41, 59, 0.9);
-                border: 1px solid rgba(255,255,255,0.15);
+                background: rgba(13, 27, 46, 0.9);
+                border: 1px solid rgba(0, 212, 255, 0.15);
                 border-radius: 8px;
-                color: #94a3b8;
+                color: #64748b;
                 font-size: 18px;
                 cursor: pointer;
                 display: flex;
@@ -228,28 +228,29 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
                 backdrop-filter: blur(10px);
             }}
             #controls button:hover {{
-                background: rgba(59, 130, 246, 0.3);
-                border-color: #3b82f6;
+                background: rgba(0, 212, 255, 0.2);
+                border-color: #00d4ff;
                 color: #e2e8f0;
             }}
             #legend {{
                 position: absolute;
                 top: 16px;
                 right: 16px;
-                background: rgba(15, 23, 42, 0.85);
+                background: rgba(13, 27, 46, 0.85);
                 backdrop-filter: blur(12px);
-                border: 1px solid rgba(255,255,255,0.1);
+                border: 1px solid rgba(0, 212, 255, 0.08);
                 border-radius: 12px;
                 padding: 14px 18px;
                 z-index: 10;
                 font-size: 11px;
-                color: #94a3b8;
+                color: #64748b;
             }}
             .legend-item {{
                 display: flex;
                 align-items: center;
                 gap: 8px;
                 margin-bottom: 6px;
+                font-family: 'Exo 2', sans-serif;
             }}
             .legend-dot {{
                 width: 10px;
@@ -261,9 +262,9 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
                 position: absolute;
                 bottom: 16px;
                 right: 16px;
-                background: rgba(15, 23, 42, 0.9);
+                background: rgba(13, 27, 46, 0.9);
                 backdrop-filter: blur(12px);
-                border: 1px solid rgba(59, 130, 246, 0.3);
+                border: 1px solid rgba(0, 212, 255, 0.3);
                 border-radius: 12px;
                 padding: 14px 18px;
                 z-index: 10;
@@ -272,9 +273,9 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
                 display: none;
                 min-width: 180px;
             }}
-            #node-info h4 {{ color: #3b82f6; margin-bottom: 6px; font-size: 13px; }}
+            #node-info h4 {{ color: #00d4ff; margin-bottom: 6px; font-size: 13px; font-family: 'Exo 2', sans-serif; }}
             #node-info .metric {{ display: flex; justify-content: space-between; margin-bottom: 3px; }}
-            #node-info .metric-label {{ color: #94a3b8; }}
+            #node-info .metric-label {{ color: #64748b; }}
             #node-info .metric-val {{ font-weight: 600; }}
         </style>
     </head>
@@ -286,12 +287,12 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
                 <button onclick="network.fit({{animation: true}})" title="Fit to Screen">⊙</button>
             </div>
             <div id="legend">
-                <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Source Node</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Destination / Cloud</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Alternate Route</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div> Source Node</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#00ff88"></div> Destination / Cloud</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div> Alternate Route</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Failed / Critical</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Congestion Source</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#1e293b; border: 1px solid #475569"></div> Router Node</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Congestion Source</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#132238; border: 1px solid #00d4ff"></div> Router Node</div>
             </div>
             <div id="node-info">
                 <h4 id="ni-title">Node Info</h4>
@@ -300,6 +301,7 @@ def draw_topology_lab(timestamp, routing_data, ml_data, runtime_data):
                 <div class="metric"><span class="metric-label">Status</span><span class="metric-val" id="ni-status">—</span></div>
             </div>
         </div>
+
         <script>
             var nodes = new vis.DataSet({nodes_str});
             var edges = new vis.DataSet({edges_str});

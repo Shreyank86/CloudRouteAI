@@ -76,15 +76,16 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
     <head>
         <style>
             body {{
-                margin: 0; padding: 0; background-color: #0a0f1a;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0; padding: 0; background-color: #050d1a;
+                font-family: 'DM Sans', sans-serif;
                 overflow: hidden;
             }}
             .container {{
                 width: 100%; height: 700px; position: relative;
-                border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 16px; border: 1px solid rgba(0, 212, 255, 0.08);
                 box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
                 box-sizing: border-box;
+                background: linear-gradient(135deg, rgba(13, 27, 46, 0.5) 0%, rgba(5, 13, 26, 0.8) 100%);
             }}
             .header {{
                 position: absolute; top: 24px; left: 24px; z-index: 10;
@@ -94,38 +95,40 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
                 display: flex; align-items: center; gap: 8px;
             }}
             .pulse-dot {{
-                width: 12px; height: 12px; background-color: #3b82f6;
-                border-radius: 50%; box-shadow: 0 0 12px #3b82f6;
+                width: 12px; height: 12px; background-color: #00d4ff;
+                border-radius: 50%; box-shadow: 0 0 12px #00d4ff;
                 animation: pulse 2s infinite;
             }}
             @keyframes pulse {{
                 0% {{ opacity: 1; }} 50% {{ opacity: 0.4; }} 100% {{ opacity: 1; }}
             }}
             .title-text {{
-                color: #60a5fa; font-weight: bold; font-size: 14px;
+                color: #00d4ff; font-weight: bold; font-size: 14px;
                 text-transform: uppercase; letter-spacing: 1px; margin: 0;
+                font-family: 'Exo 2', sans-serif;
             }}
             .stats-row {{ display: flex; gap: 16px; margin-top: 8px; }}
             .stat-box {{
-                background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05);
+                background: rgba(13, 27, 46, 0.6); border: 1px solid rgba(0, 212, 255, 0.08);
                 padding: 4px 8px; border-radius: 4px; font-size: 10px; color: #fff;
+                font-family: 'Exo 2', sans-serif;
             }}
             .stat-box span.val {{ font-weight: bold; margin-left: 4px; }}
-            .val-blue {{ color: #60a5fa; }}
+            .val-blue {{ color: #00d4ff; }}
             .val-red {{ color: #ef4444; }}
-            .val-green {{ color: #10b981; }}
+            .val-green {{ color: #00ff88; }}
             
             .speed-box {{
                 position: absolute; top: 24px; right: 24px; z-index: 10;
-                background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3);
+                background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);
                 padding: 4px 12px; border-radius: 99px; font-size: 10px;
-                color: #60a5fa; font-weight: bold;
+                color: #00d4ff; font-weight: bold; font-family: 'Exo 2', sans-serif;
             }}
 
             .footer {{
                 position: absolute; bottom: 24px; left: 24px; right: 24px;
-                background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-                padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+                background: rgba(13, 27, 46, 0.85); backdrop-filter: blur(10px);
+                padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.08);
                 display: flex; align-items: center; gap: 16px;
             }}
             .timeline-container {{ flex: 1; }}
@@ -133,26 +136,26 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
                 display: flex; justify-content: space-between; margin-bottom: 4px;
                 font-size: 10px; font-weight: bold;
             }}
-            .tl-title {{ color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }}
-            .tl-val {{ color: #60a5fa; font-family: monospace; }}
+            .tl-title {{ color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; font-family: 'Exo 2', sans-serif; }}
+            .tl-val {{ color: #00d4ff; font-family: monospace; }}
             .progress-bar-bg {{
                 width: 100%; height: 4px; background: rgba(255,255,255,0.05);
                 border-radius: 99px; overflow: hidden;
             }}
             .progress-bar-fill {{
-                height: 100%; background: #3b82f6; box-shadow: 0 0 8px #3b82f6;
+                height: 100%; background: #00d4ff; box-shadow: 0 0 8px #00d4ff;
                 transition: width 1s linear;
             }}
 
             /* SVG Styling */
             svg {{ width: 100%; height: 100%; }}
-            .dc-label {{ font-size: 10px; font-weight: bold; opacity: 0.8; }}
-            .node-circle {{ fill: #0a0f1a; stroke-width: 2px; transition: all 0.3s; cursor: pointer; }}
-            .node-circle:hover {{ stroke: #60a5fa; transform: scale(1.1); transform-origin: center; }}
-            .node-label {{ font-size: 9px; fill: #94a3b8; font-weight: bold; pointer-events: none; }}
+            .dc-label {{ font-size: 10px; font-weight: bold; opacity: 0.8; font-family: 'Exo 2', sans-serif; }}
+            .node-circle {{ stroke-width: 2px; transition: all 0.3s; cursor: pointer; }}
+            .node-circle:hover {{ transform: scale(1.15); transform-origin: center; }}
+            .node-label {{ font-size: 9px; fill: #64748b; font-weight: bold; pointer-events: none; font-family: 'Exo 2', sans-serif; }}
             
             .packet {{
-                fill: #60a5fa; filter: drop-shadow(0 0 8px #3b82f6);
+                fill: #00d4ff; filter: drop-shadow(0 0 8px #00d4ff);
             }}
             .packet.failed {{ fill: #ef4444; filter: drop-shadow(0 0 8px #ef4444); }}
         </style>
@@ -174,14 +177,14 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
             
             <svg viewBox="0 0 1100 450" id="network-svg">
                 <!-- DC Boundaries -->
-                <rect x="50" y="80" width="150" height="240" rx="15" fill="rgba(59,130,246,0.03)" stroke="rgba(59,130,246,0.1)" stroke-dasharray="5,5" />
-                <text x="125" y="70" text-anchor="middle" fill="#3b82f6" class="dc-label">DC-1 (ORIGIN)</text>
+                <rect x="50" y="80" width="150" height="240" rx="15" fill="rgba(0,212,255,0.02)" stroke="rgba(0,212,255,0.08)" stroke-dasharray="5,5" />
+                <text x="125" y="70" text-anchor="middle" fill="#00d4ff" class="dc-label">DC-1 (ORIGIN)</text>
 
-                <rect x="350" y="300" width="300" height="100" rx="15" fill="rgba(139,92,246,0.03)" stroke="rgba(139,92,246,0.1)" stroke-dasharray="5,5" />
-                <text x="500" y="420" text-anchor="middle" fill="#8b5cf6" class="dc-label">DC-2 (TRANSIT/BACKUP)</text>
+                <rect x="350" y="300" width="300" height="100" rx="15" fill="rgba(124,58,237,0.02)" stroke="rgba(124,58,237,0.08)" stroke-dasharray="5,5" />
+                <text x="500" y="420" text-anchor="middle" fill="#7c3aed" class="dc-label">DC-2 (TRANSIT/BACKUP)</text>
 
-                <rect x="850" y="80" width="200" height="240" rx="15" fill="rgba(16,185,129,0.03)" stroke="rgba(16,185,129,0.1)" stroke-dasharray="5,5" />
-                <text x="950" y="70" text-anchor="middle" fill="#10b981" class="dc-label">DC-3 (DESTINATION)</text>
+                <rect x="850" y="80" width="200" height="240" rx="15" fill="rgba(0,255,136,0.02)" stroke="rgba(0,255,136,0.08)" stroke-dasharray="5,5" />
+                <text x="950" y="70" text-anchor="middle" fill="#00ff88" class="dc-label">DC-3 (DESTINATION)</text>
 
                 <g id="links-layer"></g>
                 <g id="active-path-layer"></g>
@@ -242,10 +245,10 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
                     line.setAttribute('stroke-width', '4');
                     line.setAttribute('stroke-dasharray', '8,4');
                 }} else if (isCongested) {{
-                    line.setAttribute('stroke', '#f97316');
+                    line.setAttribute('stroke', '#f59e0b');
                     line.setAttribute('stroke-width', '3');
                 }} else {{
-                    line.setAttribute('stroke', '#1e293b');
+                    line.setAttribute('stroke', 'rgba(0, 212, 255, 0.1)');
                     line.setAttribute('stroke-width', '2');
                 }}
                 linksLayer.appendChild(line);
@@ -262,9 +265,9 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
                 const pathLine = document.createElementNS(svgNS, 'polyline');
                 pathLine.setAttribute('points', activeCoords.map(p => p.x + "," + p.y).join(" "));
                 pathLine.setAttribute('fill', 'none');
-                pathLine.setAttribute('stroke', '#3b82f6');
+                pathLine.setAttribute('stroke', '#00d4ff');
                 pathLine.setAttribute('stroke-width', '6');
-                pathLine.setAttribute('stroke-opacity', '0.15');
+                pathLine.setAttribute('stroke-opacity', '0.2');
                 activePathLayer.appendChild(pathLine);
             }}
 
@@ -276,8 +279,28 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
                 const circle = document.createElementNS(svgNS, 'circle');
                 circle.setAttribute('cx', node.x);
                 circle.setAttribute('cy', node.y);
-                circle.setAttribute('r', '14');
-                circle.setAttribute('stroke', '#1e293b');
+                circle.setAttribute('r', '15');
+                
+                // Color nodes based on roles
+                let nodeColor = "#132238";
+                let nodeStroke = "#00d4ff";
+                if (node.id === 0 || node.id === 1) {{
+                    nodeColor = "#00d4ff";
+                    nodeStroke = "#38bdf8";
+                }} else if (node.id >= 5 && node.id <= 7) {{
+                    nodeColor = "#00ff88";
+                    nodeStroke = "#34d399";
+                }} else if (node.id === 8 || node.id === 9) {{
+                    nodeColor = "#7c3aed";
+                    nodeStroke = "#a78bfa";
+                }} else if (node.id === 10) {{
+                    nodeColor = "#f59e0b";
+                    nodeStroke = "#fb923c";
+                }}
+                
+                circle.setAttribute('fill', nodeColor);
+                circle.setAttribute('stroke', nodeStroke);
+                circle.setAttribute('stroke-width', '2');
                 circle.setAttribute('class', 'node-circle');
                 
                 const text = document.createElementNS(svgNS, 'text');
@@ -353,5 +376,6 @@ def draw_enhanced_movement_sim(current_time, routing_data, ml_data, runtime_data
     </body>
     </html>
     """
+
     
     components.html(html_template, height=height)

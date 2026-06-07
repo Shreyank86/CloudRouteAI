@@ -12,11 +12,13 @@ from topology_view import draw_topology
 from topology_lab import draw_topology_lab
 from metrics_view import draw_metrics_chart, draw_link_details
 from routing_view import draw_routing_decisions
-from comparison_view import draw_comparison
+from comparison_view import draw_comparison, draw_live_telemetry_chart
 from simulation_view import draw_simulation_lab
 from react_topology import draw_enhanced_movement_sim
 from live_view import draw_live_dashboard
 from xai_view import draw_xai_tab
+
+import theme_engine as te
 
 st.set_page_config(
     page_title="CloudRouteAI | Adaptive Network Control",
@@ -43,7 +45,9 @@ if "tab" in st.query_params:
     del st.query_params["tab"]
 
 if "live_sim" not in st.session_state:
-    from live_engine import LiveNetworkSimulator
+    from live_engine import LiveNetworkSimulator, LIVE_DIR
+    import os as _os
+    _os.makedirs(LIVE_DIR, exist_ok=True)
     st.session_state.live_sim = LiveNetworkSimulator()
 if "active_tab" not in st.session_state:
     st.session_state.active_tab = 0
@@ -52,62 +56,8 @@ if "playing" not in st.session_state:
 if "current_sim_time" not in st.session_state:
     st.session_state.current_sim_time = 0.0
 
-# Premium CSS
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-* { font-family: 'Outfit', sans-serif; }
-.main { background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0f172a 100%); color: #f8fafc; }
-.stApp { background-color: #0a0f1a; }
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-    border-right: 1px solid rgba(255,255,255,0.06);
-}
-.metric-card {
-    background: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 1.5rem; border-radius: 1rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    text-align: center; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-}
-.metric-card:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.4); box-shadow: 0 12px 40px rgba(59,130,246,0.15); }
-.metric-value { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; }
-.metric-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-h1, h2, h3 { color: #f8fafc !important; font-weight: 600 !important; }
-.stButton>button {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    color: white; border: none; border-radius: 0.75rem;
-    padding: 0.6rem 1.2rem; font-weight: 600;
-    transition: all 0.3s; box-shadow: 0 4px 15px rgba(59,130,246,0.3);
-}
-.stButton>button:hover { opacity: 0.9; box-shadow: 0 6px 25px rgba(59,130,246,0.5); transform: translateY(-1px); }
-.nav-item {
-    padding: 0.7rem 1rem; border-radius: 0.75rem; margin-bottom: 0.3rem;
-    color: #94a3b8; font-size: 0.9rem; font-weight: 500;
-    display: flex; align-items: center; gap: 0.6rem;
-    transition: all 0.2s; cursor: pointer;
-}
-.nav-active { background: rgba(59,130,246,0.15); color: #3b82f6; border-left: 3px solid #3b82f6; }
-.scenario-card {
-    background: rgba(30, 41, 59, 0.4); padding: 1rem; border-radius: 0.75rem;
-    border: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.5rem;
-    transition: all 0.2s; cursor: pointer;
-}
-.scenario-card:hover { border-color: rgba(59,130,246,0.3); }
-.scenario-card.active { border-color: #ef4444; background: rgba(239,68,68,0.1); }
-.status-badge { padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
-.status-healthy { background-color: #064e3b; color: #10b981; border: 1px solid #10b981; }
-.status-active { background-color: #1e3a8a; color: #3b82f6; border: 1px solid #3b82f6; }
-.status-alert { background-color: #7c2d12; color: #f97316; border: 1px solid #f97316; }
-.status-critical { background-color: #7f1d1d; color: #ef4444; border: 1px solid #ef4444; }
-hr { border-color: rgba(255,255,255,0.06); }
-.glass-panel {
-    background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; padding: 1.5rem;
-}
-</style>
-""", unsafe_allow_html=True)
+# Inject theme engine CSS
+te.inject_global_css()
 
 # --- Sidebar ---
 with st.sidebar:
@@ -122,22 +72,22 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     active_tab = st.session_state.get("active_tab_label", "🌐 Global Network Ops")
-    dash_active = "nav-active" if active_tab == "🌐 Global Network Ops" else ""
-    topo_active = "nav-active" if active_tab == "🗺️ Topology Lab" else ""
-    rep_active = "nav-active" if active_tab == "📋 Reports" else ""
+    dash_active = "cn-nav-active" if active_tab == "🌐 Global Network Ops" else ""
+    topo_active = "cn-nav-active" if active_tab == "🗺️ Topology Lab" else ""
+    rep_active = "cn-nav-active" if active_tab == "📋 Reports" else ""
 
     st.markdown(f'''
     <a href="/?tab=dashboard" target="_self" style="text-decoration: none;">
-        <div class="nav-item {dash_active}">📊 Dashboard</div>
+        <div class="cn-nav-item {dash_active}">📊 Dashboard</div>
     </a>
     <a href="/?tab=devices" target="_self" style="text-decoration: none;">
-        <div class="nav-item">🖥️ Devices</div>
+        <div class="cn-nav-item">🖥️ Devices</div>
     </a>
     <a href="/?tab=topology" target="_self" style="text-decoration: none;">
-        <div class="nav-item {topo_active}">🗺️ Topology Lab</div>
+        <div class="cn-nav-item {topo_active}">🗺️ Topology Lab</div>
     </a>
     <a href="/?tab=reports" target="_self" style="text-decoration: none;">
-        <div class="nav-item {rep_active}">📋 Reports</div>
+        <div class="cn-nav-item {rep_active}">📋 Reports</div>
     </a>
     ''', unsafe_allow_html=True)
 
@@ -175,17 +125,13 @@ with st.sidebar:
     st.markdown("### 📡 System Status")
     sc1, sc2 = st.columns(2)
     with sc1:
-        st.markdown('<div class="status-badge status-healthy">CORE OK</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cn-badge cn-badge-healthy">CORE OK</div>', unsafe_allow_html=True)
     with sc2:
-        st.markdown('<div class="status-badge status-active">AI ACTIVE</div>', unsafe_allow_html=True)
+        st.markdown('<div class="cn-badge cn-badge-active">AI ACTIVE</div>', unsafe_allow_html=True)
 
 # --- Main Dashboard ---
-st.markdown("""
-<div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
-    <h1 style="margin:0;">🌐 CloudRouteAI</h1>
-</div>
-<p style="color:#94a3b8;margin-top:0;">Adaptive Multi-Path Routing & Intelligent Congestion Control</p>
-""", unsafe_allow_html=True)
+te.hero_banner("🌐 CloudRouteAI", "Adaptive Multi-Path Routing & Intelligent Congestion Control")
+
 
 def draw_global_header(tab_key):
     # Action buttons row
@@ -215,17 +161,31 @@ def draw_global_header(tab_key):
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Key Metrics
-    avg_loss, avg_util, total_thru, max_queue = get_summary_metrics(runtime_data, st.session_state.current_sim_time)
+    # ── Real-Time KPI Cards ────────────────────────────────────────────────────
+    # If the Live Simulator has actually been stepped, use its live state.
+    # Otherwise fall back to the static NS-3 runtime_data file.
+    live_sim = st.session_state.get("live_sim")
+    use_live = live_sim is not None and live_sim.time_step > 0
+
+    if use_live:
+        avg_loss, avg_util, total_thru, max_queue = live_sim.get_aggregate_metrics()
+        source_label = f"🔴 LIVE  ·  t = {live_sim.time_step * 2:.0f} s"
+    else:
+        avg_loss, avg_util, total_thru, max_queue = get_summary_metrics(runtime_data, st.session_state.current_sim_time)
+        source_label = "📁 Static (NS-3 file)"
+
+    st.caption(f"Data source: {source_label}")
+
     mcols = st.columns(4)
     with mcols[0]:
-        st.markdown(f'<div class="metric-card"><div class="metric-value">{avg_loss:.2f}%</div><div class="metric-label">Avg Packet Loss</div></div>', unsafe_allow_html=True)
+        te.metric_card("Avg Packet Loss", f"{avg_loss:.2f}%", icon="📉", color=te.COLORS["danger"], idx=0)
     with mcols[1]:
-        st.markdown(f'<div class="metric-card"><div class="metric-value">{avg_util:.1f}%</div><div class="metric-label">Network Load</div></div>', unsafe_allow_html=True)
+        te.metric_card("Network Load", f"{avg_util:.1f}%", icon="⚖️", color=te.COLORS["accent_1"], idx=1)
     with mcols[2]:
-        st.markdown(f'<div class="metric-card"><div class="metric-value">{total_thru:.2f}</div><div class="metric-label">Total Mbps</div></div>', unsafe_allow_html=True)
+        te.metric_card("Total Mbps", f"{total_thru:.2f}", icon="⚡", color=te.COLORS["success"], idx=2)
     with mcols[3]:
-        st.markdown(f'<div class="metric-card"><div class="metric-value">{max_queue:.1f}%</div><div class="metric-label">Peak Congestion</div></div>', unsafe_allow_html=True)
+        te.metric_card("Peak Congestion", f"{max_queue:.1f}%", icon="🔥", color=te.COLORS["warning"], idx=3)
+
 
 
 # Tabbed Interface
@@ -237,18 +197,8 @@ tab0, tab6, tab1, tab2, tab3, tab4, tab_xai, tab5 = st.tabs(tab_names, key="acti
 
 with tab0:
     draw_global_header("t0")
-    st.markdown("""
-    <div class="glass-panel" style="margin-bottom: 1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <h2 style="margin:0; color: #f8fafc;">🌐 Global Operations Center</h2>
-                <p style="color: #94a3b8; margin: 0.5rem 0 0 0; font-size: 0.95rem;">
-                    Real-time multi-data-center traffic movement and intelligent routing visualization.
-                </p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    te.section_header("Global Operations Center", "Real-time multi-data-center traffic movement and intelligent routing visualization.", icon="🌐")
+
     
     col_play, col_stop, col_spacer = st.columns([1, 1, 3])
     with col_play:
@@ -295,6 +245,7 @@ with tab3:
     draw_metrics_chart(runtime_data)
     st.markdown("---")
     draw_comparison()
+    draw_live_telemetry_chart()
 
 with tab4:
     draw_global_header("t4")
@@ -311,20 +262,13 @@ with tab6:
 
 with tab5:
     draw_global_header("t5")
-    st.markdown("""
-    <div class="glass-panel" style="margin-bottom: 1.5rem;">
-        <h2 style="margin:0; color: #f8fafc;">📋 System Analysis & Reports</h2>
-        <p style="color: #94a3b8; margin: 0.5rem 0 0 0; font-size: 0.95rem;">
-            Export simulation runs data, validation engine metrics, and routing decisions.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    te.section_header("System Analysis & Reports", "Export simulation runs data, validation engine metrics, and routing decisions.", icon="📋")
 
     r_col1, r_col2 = st.columns([2, 1.2])
 
     with r_col1:
         st.markdown("### 📊 Available Datasets for Export")
-        st.markdown("<p style='color:#64748b; font-size:0.85rem; margin-top:-0.5rem;'>Downloads include all generated JSON data from the latest active simulation run.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color:var(--text-muted); font-size:0.85rem; margin-top:-0.5rem;'>Downloads include all generated JSON data from the latest active simulation run.</p>", unsafe_allow_html=True)
 
         def safe_read_file(filename):
             path = os.path.join(BASE_DIR, "outputs", "processed", filename)
@@ -379,22 +323,21 @@ with tab5:
 
     with r_col2:
         st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.4); padding: 1.5rem; border-radius: 1rem;
-                    border: 1px solid rgba(255, 255, 255, 0.06); height: 100%;
-                    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);">
+        <div class="cn-glass-panel" style="height: 100%;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
                 <span style="font-size: 1.2rem;">ℹ️</span>
-                <span style="font-size: 1.05rem; font-weight: 600; color: #f8fafc;">Verification Info</span>
+                <span style="font-size: 1.05rem; font-weight: 600; color: var(--accent-1); font-family: var(--font-display);">Verification Info</span>
             </div>
-            <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+            <p style="font-size: 0.85rem; color: var(--text-primary); line-height: 1.6;">
                 These datasets contain raw metrics generated from the simulation models, which feed directly into our 
                 <b>Decision Intelligence Layer</b> and the <b>Explainable AI (XAI)</b> dashboard.
             </p>
-            <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.6; margin-top: 1rem;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 1rem;">
                 JSON schemas are fully compatible with validation engines and offline analyzers.
             </p>
         </div>
         """, unsafe_allow_html=True)
+
 
 # Playback Logic (At the end of the script)
 if st.session_state.playing:

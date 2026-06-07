@@ -1,7 +1,9 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import time
-from live_engine import LiveNetworkSimulator
+from live_engine import LiveNetworkSimulator, append_live_snapshot, clear_live_log
+import theme_engine as te
+
 
 def draw_live_dashboard():
     if "live_sim" not in st.session_state:
@@ -13,18 +15,13 @@ def draw_live_dashboard():
     sim = st.session_state.live_sim
     state = sim.get_state()
     
-    st.markdown("""
-    <div style="background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;">
-        <h2 style="margin:0; color:#3b82f6;">🔴 Live Network Operations</h2>
-        <p style="color:#94a3b8; font-size:0.9rem;">Hybrid Mesh + Hierarchical Spine-Leaf | Real-time ML Evaluation & Partial Rerouting</p>
-    </div>
-    """, unsafe_allow_html=True)
+    te.section_header("Live Network Operations", "Hybrid Mesh + Hierarchical Spine-Leaf | Real-time ML Evaluation & Partial Rerouting", icon="🔴")
     
     col1, col2 = st.columns([1, 3])
     
     with col1:
         st.markdown("### 🎛️ Dynamic Routing Control")
-        st.markdown("<p style='color:#64748b; font-size:0.8rem;'>Select custom Source/Destination pairs and inject traffic to see partial routing automatically optimize the core paths.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color:var(--text-muted); font-size:0.8rem;'>Select custom Source/Destination pairs and inject traffic to see partial routing automatically optimize the core paths.</p>", unsafe_allow_html=True)
         
         dc_map = {
             "DC1 (Origin)": 2,
@@ -36,25 +33,25 @@ def draw_live_dashboard():
         
         dc_names = list(dc_map.keys())
         
-        st.markdown("#### Flow 1")
+        st.markdown("<h4 style='color:var(--accent-1); font-family:var(--font-display); margin-bottom:0.25rem;'>Flow 1</h4>", unsafe_allow_html=True)
         f1_c1, f1_c2 = st.columns(2)
         with f1_c1: src1 = st.selectbox("Source 1", dc_names, index=0)
         with f1_c2: dst1 = st.selectbox("Dest 1", dc_names, index=2)
         v1 = st.slider("Traffic Volume 1 (Mbps)", 0, 800, sim.flows.get("flow_1", {}).get("volume", 0), 50, key="v1")
         
         s1 = sim.flows.get("flow_1", {}).get("status", "Normal Path (100%)")
-        c1_color = "#10b981" if "Normal" in s1 else "#f59e0b"
-        st.markdown(f"<div style='color:{c1_color}; font-size:0.85rem; font-weight:bold; margin-bottom:1rem;'>Routing: {s1}</div>", unsafe_allow_html=True)
+        c1_color = te.COLORS["accent_3"] if "Normal" in s1 else te.COLORS["warning"]
+        st.markdown(f"<div style='color:{c1_color}; font-size:0.85rem; font-weight:bold; margin-bottom:1rem; font-family:var(--font-display);'>Routing: {s1}</div>", unsafe_allow_html=True)
         
-        st.markdown("#### Flow 2")
+        st.markdown("<h4 style='color:var(--accent-2); font-family:var(--font-display); margin-bottom:0.25rem;'>Flow 2</h4>", unsafe_allow_html=True)
         f2_c1, f2_c2 = st.columns(2)
         with f2_c1: src2 = st.selectbox("Source 2", dc_names, index=1)
         with f2_c2: dst2 = st.selectbox("Dest 2", dc_names, index=3)
         v2 = st.slider("Traffic Volume 2 (Mbps)", 0, 800, sim.flows.get("flow_2", {}).get("volume", 0), 50, key="v2")
         
         s2 = sim.flows.get("flow_2", {}).get("status", "Normal Path (100%)")
-        c2_color = "#10b981" if "Normal" in s2 else "#f59e0b"
-        st.markdown(f"<div style='color:{c2_color}; font-size:0.85rem; font-weight:bold; margin-bottom:1rem;'>Routing: {s2}</div>", unsafe_allow_html=True)
+        c2_color = te.COLORS["accent_3"] if "Normal" in s2 else te.COLORS["warning"]
+        st.markdown(f"<div style='color:{c2_color}; font-size:0.85rem; font-weight:bold; margin-bottom:1rem; font-family:var(--font-display);'>Routing: {s2}</div>", unsafe_allow_html=True)
 
         # ── Scenario Orchestration (Context-Aware Events) ──
         st.markdown("#### 📅 Scenario Orchestration")
@@ -75,7 +72,7 @@ def draw_live_dashboard():
         active_evs = sim.event_repo.get_active_events(sim.time_step * 2.0)
         up_evs = sim.event_repo.get_upcoming_events(sim.time_step * 2.0)
         if active_evs or up_evs:
-            st.markdown("<div style='background:rgba(239,68,68,0.1); padding:0.5rem; border-radius:0.5rem;'>", unsafe_allow_html=True)
+            st.markdown(f"<div style='background:rgba(239,68,68,0.1); padding:0.5rem; border-radius:0.5rem; border:1px solid {te.COLORS['danger']}; color:var(--text-primary); font-size:0.85rem;'>", unsafe_allow_html=True)
             st.markdown(f"**Active Events:** {len(active_evs)} | **Upcoming:** {len(up_evs) - len(active_evs)}")
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -92,6 +89,13 @@ def draw_live_dashboard():
             st.session_state.live_sim = LiveNetworkSimulator()
             st.session_state.is_running = False
             st.session_state.show_live_analysis = False
+            st.rerun()
+
+        if st.button("🗑️ Clear Telemetry Log", use_container_width=True, type="secondary"):
+            clear_live_log()
+            # Also reset in-memory history on the current engine
+            sim.history = {"snapshots": [], "costs": [], "routing": []}
+            st.success("✅ Telemetry log cleared.")
             st.rerun()
 
         if not st.session_state.is_running:
@@ -207,8 +211,17 @@ def draw_live_dashboard():
             w = max_x - min_x
             h = max_y - min_y
             
-            svg_elements.append(f'<rect x="{min_x}" y="{min_y}" width="{w}" height="{h}" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="4" />')
-            svg_elements.append(f'<text x="{min_x + w/2}" y="{min_y + 16}" font-family="Arial" font-size="11" font-weight="bold" fill="#cbd5e1" text-anchor="middle">{g_name}</text>')
+            box_color = "rgba(0, 212, 255, 0.2)"
+            text_color = "#00d4ff"
+            if "DC2" in g_name or "DC5" in g_name or "Buffer" in g_name:
+                box_color = "rgba(124, 58, 237, 0.2)"
+                text_color = "#7c3aed"
+            elif "DC3" in g_name:
+                box_color = "rgba(0, 255, 136, 0.2)"
+                text_color = "#00ff88"
+            
+            svg_elements.append(f'<rect x="{min_x}" y="{min_y}" width="{w}" height="{h}" rx="10" fill="rgba(5, 13, 26, 0.4)" stroke="{box_color}" stroke-width="1.5" stroke-dasharray="4" />')
+            svg_elements.append(f'<text x="{min_x + w/2}" y="{min_y + 16}" font-family="Exo 2, DM Sans" font-size="11" font-weight="bold" fill="{text_color}" text-anchor="middle">{g_name}</text>')
             
         # Draw edges & animated packets
         for l in state["links"]:
@@ -228,22 +241,23 @@ def draw_live_dashboard():
                         for i in range(len(p)-1):
                             if (p[i] == u and p[i+1] == v) or (p[i] == v and p[i+1] == u):
                                 is_active = True
+                                is_active = True
                                 edge_types.add(ptype)
                                 
             cost = l["cost"]
             thru = l["throughput"]
             
-            color = 'rgba(255,255,255,0.05)'
+            color = 'rgba(0, 212, 255, 0.1)'
             width = 1.5
             
             if is_active:
                 width = 2.5
                 if "rerouted" in edge_types and "primary" in edge_types:
-                    color = '#d946ef' # Purple if shared
+                    color = '#7c3aed' # Purple if shared
                 elif "rerouted" in edge_types:
                     color = '#f59e0b' # Orange for rerouted
                 else:
-                    color = '#3b82f6' # Blue for primary
+                    color = '#00d4ff' # Blue for primary
             
             if cost > 9000:
                 color = '#ef4444'
@@ -279,7 +293,7 @@ def draw_live_dashboard():
                                 duration = base_dur / play_speed
                                 num_particles = min(12, max(2, int(path_vol / 40.0)))
                                 
-                                particle_color = "#f97316" if ptype == "rerouted" else "#60a5fa"
+                                particle_color = "#f59e0b" if ptype == "rerouted" else "#00d4ff"
                                 target_path_id = path_id if link_dir == "forward" else path_id_rev
                                 
                                 for i in range(num_particles):
@@ -295,26 +309,29 @@ def draw_live_dashboard():
         # Draw nodes
         for n in sim.nodes:
             x, y = pos[n][0], pos[n][1]
-            color = "#10b981"
-            if n in [15,16,17]: color = "#eab308"
-            elif n in [18,19]: color = "#38bdf8"
-            elif n in [1,4,7,10,13]: color = "#a855f7"
+            color = "#00ff88"
+            if n in [15,16,17]: color = "#38bdf8"
+            elif n in [18,19]: color = "#7c3aed"
+            elif n in [1,4,7,10,13]: color = "#00ff88"
             
-            svg_elements.append(f'<circle cx="{x}" cy="{y}" r="16" fill="#1e293b" stroke="{color}" stroke-width="3" />')
-            svg_elements.append(f'<text x="{x}" y="{y+4}" font-family="Arial" font-size="11" font-weight="bold" fill="white" text-anchor="middle">{n}</text>')
+            svg_elements.append(f'<circle cx="{x}" cy="{y}" r="16" fill="#132238" stroke="{color}" stroke-width="3" />')
+            svg_elements.append(f'<text x="{x}" y="{y+4}" font-family="Exo 2, DM Sans" font-size="11" font-weight="bold" fill="#e2e8f0" text-anchor="middle">{n}</text>')
             
         html_code = f'''
-        <div style="background-color: #0f172a; width: 100%; height: 500px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; overflow: hidden;">
+        <div style="background-color: #050d1a; width: 100%; height: 500px; border-radius: 10px; border: 1px solid rgba(0, 212, 255, 0.08); display: flex; justify-content: center; align-items: center; overflow: hidden;">
             <svg width="800" height="600" viewBox="0 0 800 600">
                 {"".join(svg_elements)}
             </svg>
         </div>
         '''
         components.html(html_code, height=520)
+
         
     if st.session_state.is_running:
         sim.set_flow("flow_1", dc_map[src1], dc_map[dst1], v1)
         sim.set_flow("flow_2", dc_map[src2], dc_map[dst2], v2)
         sim.step()
+        # Persist this step to the permanent telemetry log
+        append_live_snapshot(sim)
         time.sleep(1.0 / play_speed)
         st.rerun()

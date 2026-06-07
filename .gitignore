@@ -29,3 +29,6 @@ Thumbs.db
 animation.xml
 netanim/
 tmp_unzip/
+
+# Live telemetry log — runtime session data, user-generated, excluded from repo
+outputs/live/
