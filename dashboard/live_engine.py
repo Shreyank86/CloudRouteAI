@@ -455,7 +455,7 @@ class LiveNetworkSimulator:
         )
 
 
-    def step(self):
+    def step(self, ignore_events=False):
         self.time_step += 1
         
         # 1. Reset link offered throughput
@@ -474,7 +474,7 @@ class LiveNetworkSimulator:
 
         # 3. Network Physics & ML Cost Prediction
         current_time = self.time_step * 2.0
-        active_events = self.event_repo.get_active_events(current_time)
+        active_events = [] if ignore_events else self.event_repo.get_active_events(current_time)
 
         for link, state in self.link_states.items():
             cap = state["capacity"]

@@ -1,7 +1,33 @@
 import streamlit as st
 import os
 import subprocess
+import sys
 import time
+import threading
+
+# ── Launch telemetry server at module-level (once per Streamlit process) ──────
+# This runs before any browser connects, so port 8000 is always ready.
+_ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_TEL_DIR = os.path.join(_ROOT_DIR, "telemetry")
+
+def _start_telemetry_server():
+    """Start FastAPI telemetry receiver as a background thread."""
+    # Add both root and telemetry dirs to path for imports
+    if _ROOT_DIR not in sys.path:
+        sys.path.insert(0, _ROOT_DIR)
+    if _TEL_DIR not in sys.path:
+        sys.path.insert(0, _TEL_DIR)
+    try:
+        from telemetry.receiver import run_receiver
+        t = threading.Thread(target=run_receiver, args=("0.0.0.0", 8000), daemon=True)
+        t.start()
+    except Exception as _e:
+        print(f"[TelemetryServer] Failed to start: {_e}")
+
+# Use a module-level sentinel so this only fires once per process lifetime
+if not getattr(st, '_telemetry_server_launched', False):
+    _start_telemetry_server()
+    st._telemetry_server_launched = True
 
 from dash_utils import (
     get_available_scenarios, scenario_description,
@@ -27,7 +53,7 @@ st.set_page_config(
 
 # --- Session State ---
 if "active_tab_label" not in st.session_state:
-    st.session_state.active_tab_label = "🌐 Global Network Ops"
+    st.session_state["active_tab_label"] = "🌐 Global Network Ops"
 
 # --- Sidebar Query Parameter Routing ---
 if "tab" in st.query_params:
@@ -39,10 +65,15 @@ if "tab" in st.query_params:
         "devices": "🗺️ Topology Lab",
     }
     if selected_tab in tab_query_map:
-        st.session_state.active_tab_label = tab_query_map[selected_tab]
+        st.session_state["active_tab_label"] = tab_query_map[selected_tab]
         if selected_tab == "devices":
             st.toast("🖥️ Devices inventory view is under construction. Please use Topology Lab for active routing details.", icon="ℹ️")
     del st.query_params["tab"]
+
+# Telemetry server is now started at module-level above (before any session).
+# Mark session state so other parts of the UI know the server is active.
+if "telemetry_server_started" not in st.session_state:
+    st.session_state.telemetry_server_started = True
 
 if "live_sim" not in st.session_state:
     from live_engine import LiveNetworkSimulator, LIVE_DIR
@@ -133,37 +164,41 @@ with st.sidebar:
 te.hero_banner("🌐 CloudRouteAI", "Adaptive Multi-Path Routing & Intelligent Congestion Control")
 
 
+def reset_topology_callback(tab_key):
+    st.session_state.playing = False
+    st.session_state.current_sim_time = 0.0
+    for d in ["outputs/raw", "outputs/ml", "outputs/routing", "outputs/processed"]:
+        full_d = os.path.join(BASE_DIR, d)
+        os.makedirs(full_d, exist_ok=True)
+        for f in os.listdir(full_d):
+            try:
+                os.remove(os.path.join(full_d, f))
+            except Exception:
+                pass
+    tab_map = {
+        "t0": "🌐 Global Network Ops",
+        "t1": "🗺️ Topology Lab",
+        "t2": "⚡ Simulation Lab",
+        "t3": "📊 Performance Analytics",
+        "t4": "🧠 Adaptive Intelligence",
+        "t5": "📋 Reports",
+        "t6": "⚡ True LIVE Simulator",
+        "txai": "🔍 Explainable AI (XAI)",
+    }
+    if tab_key in tab_map:
+        st.session_state["active_tab_label"] = tab_map[tab_key]
+
 def draw_global_header(tab_key):
     # Action buttons row
     btn_cols = st.columns([1, 1, 1, 3])
     with btn_cols[0]:
-        if st.button("🔄 Reset Topology", use_container_width=True, key=f"reset_{tab_key}"):
-            st.session_state.playing = False
-            st.session_state.current_sim_time = 0.0
-            for d in ["outputs/raw", "outputs/ml", "outputs/routing", "outputs/processed"]:
-                full_d = os.path.join(BASE_DIR, d)
-                os.makedirs(full_d, exist_ok=True)
-                for f in os.listdir(full_d):
-                    os.remove(os.path.join(full_d, f))
-            tab_map = {
-                "t0": "🌐 Global Network Ops",
-                "t1": "🗺️ Topology Lab",
-                "t2": "⚡ Simulation Lab",
-                "t3": "📊 Performance Analytics",
-                "t4": "🧠 Adaptive Intelligence",
-                "t5": "📋 Reports",
-                "t6": "⚡ True LIVE Simulator",
-                "txai": "🔍 Explainable AI (XAI)",
-            }
-            if tab_key in tab_map:
-                st.session_state.active_tab_label = tab_map[tab_key]
-            st.rerun()
+        st.button("🔄 Reset Topology", use_container_width=True, key=f"reset_{tab_key}", on_click=reset_topology_callback, args=(tab_key,))
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ── Real-Time KPI Cards ────────────────────────────────────────────────────
     # If the Live Simulator has actually been stepped, use its live state.
-    # Otherwise fall back to the static NS-3 runtime_data file.
+    # Otherwise fall back to the static simulated runtime_data file.
     live_sim = st.session_state.get("live_sim")
     use_live = live_sim is not None and live_sim.time_step > 0
 
@@ -172,7 +207,7 @@ def draw_global_header(tab_key):
         source_label = f"🔴 LIVE  ·  t = {live_sim.time_step * 2:.0f} s"
     else:
         avg_loss, avg_util, total_thru, max_queue = get_summary_metrics(runtime_data, st.session_state.current_sim_time)
-        source_label = "📁 Static (NS-3 file)"
+        source_label = "📁 Static (Simulated)"
 
     st.caption(f"Data source: {source_label}")
 
@@ -270,16 +305,16 @@ with tab5:
         st.markdown("### 📊 Available Datasets for Export")
         st.markdown("<p style='color:var(--text-muted); font-size:0.85rem; margin-top:-0.5rem;'>Downloads include all generated JSON data from the latest active simulation run.</p>", unsafe_allow_html=True)
 
-        def safe_read_file(filename):
-            path = os.path.join(BASE_DIR, "outputs", "processed", filename)
+        def safe_read_file(subdir, filename):
+            path = os.path.join(BASE_DIR, "outputs", subdir, filename)
             if os.path.exists(path):
                 with open(path, "r") as f:
                     return f.read()
             return None
 
-        metrics_data = safe_read_file("runtime_metrics.json")
-        decisions_data = safe_read_file("routing_decisions.json")
-        costs_data = safe_read_file("ml_costs.json")
+        metrics_data = safe_read_file("raw", "runtime_metrics.json")
+        decisions_data = safe_read_file("routing", "routing.json")
+        costs_data = safe_read_file("ml", "costs.json")
 
         if metrics_data:
             st.success("✅ **Active Simulation Datasets Found!**")
@@ -319,7 +354,7 @@ with tab5:
                 st.caption("Machine Learning predicted costs.")
         else:
             st.warning("⚠️ **No Active Simulation Data Found**")
-            st.info("💡 Run a NetworkX or NS-3 simulation in the **Simulation Lab** tab to generate exportable datasets.")
+            st.info("💡 Run a Python network simulation in the **Simulation Lab** tab to generate exportable datasets.")
 
     with r_col2:
         st.markdown(f"""

@@ -13,4 +13,4 @@ echo "Starting the interactive dashboard..."
 echo "Press Ctrl+C to stop."
 echo "=================================================="
 
-streamlit run dashboard/app.py --server.headless true
+python run_dashboard.py

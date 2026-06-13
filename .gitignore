@@ -32,3 +32,8 @@ tmp_unzip/
 
 # Live telemetry log — runtime session data, user-generated, excluded from repo
 outputs/live/
+
+# Local cache and device configurations
+device_config.json
+telemetry/.telemetry_cache.json
+telemetry/.telemetry_cache.json.tmp
