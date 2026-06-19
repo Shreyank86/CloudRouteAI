@@ -85,30 +85,49 @@ class TelemetryStorage:
                     download_rate = prev_record.get("download_rate_mbps", 0.0)
                     active_connections = prev_record.get("active_connections", 0)
 
+            from datetime import datetime
+            raw_ts = payload.get("timestamp", time.time())
+            if isinstance(raw_ts, (int, float)):
+                ts_str = datetime.fromtimestamp(raw_ts).isoformat()
+            else:
+                ts_str = str(raw_ts)
+
             record = {
                 "device_id": device_id,
-                "timestamp": payload.get("timestamp", time.time()),
+                "timestamp": ts_str,
                 "bytes_sent": payload.get("bytes_sent", 0),
                 "bytes_received": payload.get("bytes_received", 0),
                 "upload_rate_mbps": upload_rate,
                 "download_rate_mbps": download_rate,
                 "total_throughput_mbps": total_throughput,
                 "active_connections": active_connections,
-                "last_seen": time.time(),
+                "last_seen": datetime.now().isoformat(),
             }
             self._clients[device_id] = record
             _write_file(self._clients)
 
     def get_active_clients(self, timeout_sec: float = 600.0) -> list:
         """Return list of clients seen within timeout_sec, pruning stale ones."""
-        now = time.time()
+        from datetime import datetime
+        now_dt = datetime.now()
         # Always reload from file so Streamlit picks up fresh data
         with _lock:
             data = _read_file()
             if data is not None:
                 self._clients = data
-            stale = [k for k, v in self._clients.items()
-                     if now - v.get("last_seen", 0) > timeout_sec]
+            stale = []
+            for k, v in self._clients.items():
+                ls = v.get("last_seen", 0)
+                if isinstance(ls, str):
+                    try:
+                        ls_time = datetime.fromisoformat(ls)
+                        if (now_dt - ls_time).total_seconds() > timeout_sec:
+                            stale.append(k)
+                    except ValueError:
+                        stale.append(k)
+                else:
+                    if time.time() - float(ls) > timeout_sec:
+                        stale.append(k)
             for k in stale:
                 del self._clients[k]
             if stale:
