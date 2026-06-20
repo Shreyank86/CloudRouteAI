@@ -1,80 +1,77 @@
 # CloudRouteAI
-**Adaptive Network Routing Platform via NS-3 & Machine Learning**
+**Adaptive Network Routing Platform via Kubernetes, Machine Learning & Telemetry**
 
-CloudRouteAI is a completely autonomous, adaptive routing network simulation project. Built entirely with NS-3, C++, Python, Scikit-Learn, and Streamlit, the platform successfully bridges the gap between low-level packet simulation and high-level artificial intelligence.
+CloudRouteAI is a completely autonomous, adaptive routing network simulation project. Built with Python, Scikit-Learn, Streamlit, and Kubernetes, the platform bridges the gap between low-level packet simulation and high-level artificial intelligence.
 
-It demonstrates a "self-healing" network capable of monitoring link telemetry, passing runtime metrics to an ML inference engine, identifying congestion, and dynamically re-injecting optimized routes into the active network via Dijkstra's algorithm—all visualized in a beautiful, evaluator-friendly dashboard.
+It demonstrates a "self-healing" network capable of monitoring live link telemetry from client agents, passing runtime metrics to an ML inference engine, identifying congestion, and visualizing real-time metrics—all hosted on a scalable Kubernetes cluster.
 
 ## 🚀 The Architecture Workflow
 
-1. **Phase 1: NS-3 Simulation Engine**  
-   Simulates a 10-node complex network with primary and alternate routes. Injects real-world scenarios: Normal, Congestion (link throttling), Link Failure, and massive Traffic Spikes using UDP Echo Applications.
-2. **Phase 2: Runtime Monitoring (Telemetry)**  
-   C++ modules extract real-time `queue_utilization`, `delay`, `throughput`, and `packet_loss` from NS-3's `FlowMonitor` every 2 seconds, exporting them to `runtime_metrics.json`.
+1. **Phase 1: Multi-Client Telemetry**  
+   Remote client laptops generate network telemetry (bandwidth usage, connections) and stream it to the central server via REST API.
+2. **Phase 2: Runtime Monitoring (Telemetry API)**  
+   A scalable FastAPI backend running in Kubernetes ingests telemetry data from all connected clients and stores it in a fast Redis cache.
 3. **Phase 3: ML Cost Prediction Engine**  
    A `RandomForestRegressor` analyzes the runtime telemetry. Instead of using raw physical metrics, it maps network health to an abstract "Routing Cost" (e.g., 10 for healthy, 9999 for failure).
-4. **Phase 4: Adaptive Threshold Controller**  
-   The C++ `AdaptiveRoutingController` actively evaluates the network path. If the ML predicted cost degrades by >15% ($\alpha = 0.15$) against the baseline, it triggers a reroute.
-5. **Phase 5: Dijkstra Routing & Dynamic Updates**  
-   The controller runs Dijkstra's Shortest Path algorithm on the new ML cost graph and dynamically manipulates NS-3's `Ipv4StaticRouting` tables at runtime to divert traffic away from the bottleneck.
-6. **Phase 6: The Explanability Dashboard**  
+4. **Phase 4: Adaptive Threshold Controller & Dijkstra Routing**  
+   The controller actively evaluates the network path. If the ML predicted cost degrades, it triggers a reroute. It runs Dijkstra's Shortest Path algorithm on the new ML cost graph to dynamically divert traffic.
+5. **Phase 5: The Explanability Dashboard**  
    A Streamlit dashboard visualizes the end-to-end process, rendering the dynamic topology, charting runtime performance metrics, explaining routing decisions, and proving the performance uplift.
 
-## 🛠️ Installation & Execution
+## 🛠️ Installation & Execution (Server)
 
-### Dependencies
+The main server application is fully containerized and orchestrated using **Kubernetes**. 
 
-#### System Requirements
-- **Cross-Platform Compatibility**: Fully compatible with Windows, macOS, and Linux
-- **Python**: version 3.10 or later
+### 1. Prerequisites
+- **Docker Desktop** installed and running on your machine.
+- **Kubernetes** enabled in Docker Desktop settings.
 
-#### Python Libraries
-Install the python libraries using the provided `requirements.txt`:
+### 2. Deploying the Application
+Open PowerShell or Terminal in the project root folder and apply the Kubernetes configurations:
 ```bash
-pip3 install -r requirements.txt
+kubectl apply -f k8s/
 ```
-The project has been tested with the following suitable versions:
-- `streamlit` (`>=1.30.0, <2.0.0`)
-- `plotly` (`>=5.0.0, <7.0.0`)
-- `networkx` (`>=3.0, <4.0`)
-- `pandas` (`>=2.0.0, <3.0.0`)
-- `lxml` (`>=4.0.0, <5.0.0`)
-- `numpy` (`>=1.20.0, <2.0.0`)
-- `scipy` (`>=1.7.0, <2.0.0`)
-- `scikit-learn` (`>=1.0.0, <2.0.0`)
+*(This automatically deploys the Redis cache, Telemetry API, and Dashboard).*
 
-### Running the End-to-End Pipeline
-We have automated the entire project execution. Simply execute the master script for your platform:
-
-**Windows Users:**
-```cmd
-run_all.bat <scenario>
-```
-
-**Linux/Mac/Git Bash Users:**
+### 3. Verify Deployment
+Verify that the pods are running:
 ```bash
-chmod +x run_all.sh
-./run_all.sh <scenario>
+kubectl get pods
 ```
-*(Supported scenarios are `normal`, `congestion`, `failure`, and `spike`)*
+You should see `redis`, `dashboard`, and `telemetry-api` pods with a `Running` status.
 
-This script will:
-1. Purge stale data from previous runs.
-2. Run baseline and adaptive Python simulations using NetworkX.
-3. Run the ML cost prediction model and Dijkstra routing path calculation.
-4. Generate comparison metrics for performance evaluation in the dashboard.
+### 4. Access the Dashboard
+Once the pods are running, access the Streamlit dashboard in your browser:
+**http://localhost:8501**
 
-## 🔍 Demonstration Scenarios
-From the dashboard's left sidebar, you can inspect the four core scenarios:
+## 💻 Client Agent Setup (For Other Users)
 
-- **Normal**: The baseline. Traffic flows across the primary path (0→1→2→3→4→5→6→7). No rerouting occurs.
-- **Congestion**: Link 4→5 is maliciously throttled to 1 Mbps. The queue backs up, the ML model detects the cost spike, and traffic is diverted to the alternate route (0→1→2→8→9→4→5→6→7).
-- **Failure**: Link 4→5 completely dies at $t=8s$. The ML cost hits 9999.0, and the network immediately self-heals by rerouting.
-- **Traffic Spike**: A massive burst of 1500 pkt/sec hits the network between $t=5s$ and $t=10s$. The ML detects the spike but realizes the alternate path is worse, so the Threshold Controller wisely decides to *stay* on the current path (preventing oscillation).
+If other users want to connect their laptops to your CloudRouteAI network, they do **not** need Docker or Kubernetes. They only need Python and the `client_agent` folder.
+
+1. Find the Server IP address (run `ipconfig` on the Server machine and find the IPv4 address, e.g., `192.168.1.5`).
+2. Have the client install requirements on their machine:
+   ```bash
+   pip install psutil requests
+   ```
+3. Run the client agent, pointing it to the Server IP:
+
+   **On Windows (PowerShell):**
+   ```powershell
+   $env:CLOUDROUTE_SERVER_IP="192.168.1.5"
+   python client_agent/agent.py
+   ```
+   
+   **On Mac/Linux:**
+   ```bash
+   export CLOUDROUTE_SERVER_IP="192.168.1.5"
+   python3 client_agent/agent.py
+   ```
+
+You will immediately see the new client pop up on the Live Dashboard!
 
 ## 📊 Evaluation Outputs
 All outputs are available in the `outputs/` directory:
-- `outputs/raw/`: Base runtime metrics from the simulation engine.
+- `outputs/raw/`: Base runtime metrics from the telemetry clients.
 - `outputs/processed/`: Standardized JSON metrics for dashboard consumption.
 - `outputs/ml/`: Predicted routing costs from the RandomForestRegressor.
 - `outputs/routing/`: Comprehensive JSON logs explaining exactly *when* and *why* every routing decision was made.
