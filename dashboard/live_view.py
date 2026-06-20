@@ -400,7 +400,15 @@ def draw_live_dashboard():
         if active_clients:
             table_rows = []
             for c in active_clients:
-                last_seen_sec = time.time() - c["last_seen"]
+                ls = c["last_seen"]
+                if isinstance(ls, str):
+                    try:
+                        from datetime import datetime
+                        last_seen_sec = (datetime.now() - datetime.fromisoformat(ls)).total_seconds()
+                    except ValueError:
+                        last_seen_sec = 0.0
+                else:
+                    last_seen_sec = time.time() - float(ls)
                 table_rows.append(
                     f"| `{c['device_id'][:8]}...` | **{c['total_throughput_mbps']:.2f} Mbps** | {c['upload_rate_mbps']} Mbps | {c['download_rate_mbps']} Mbps | {c['active_connections']} | {last_seen_sec:.1f}s ago |"
                 )

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: dashboard
-        image: cloudroute-dashboard:latest
+        image: cloudroute-dashboard:v3
         imagePullPolicy: IfNotPresent
         env:
         - name: REDIS_HOST
