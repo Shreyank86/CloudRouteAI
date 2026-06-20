@@ -5,29 +5,7 @@ import sys
 import time
 import threading
 
-# ── Launch telemetry server at module-level (once per Streamlit process) ──────
-# This runs before any browser connects, so port 8000 is always ready.
-_ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_TEL_DIR = os.path.join(_ROOT_DIR, "telemetry")
-
-def _start_telemetry_server():
-    """Start FastAPI telemetry receiver as a background thread."""
-    # Add both root and telemetry dirs to path for imports
-    if _ROOT_DIR not in sys.path:
-        sys.path.insert(0, _ROOT_DIR)
-    if _TEL_DIR not in sys.path:
-        sys.path.insert(0, _TEL_DIR)
-    try:
-        from telemetry.receiver import run_receiver
-        t = threading.Thread(target=run_receiver, args=("0.0.0.0", 8000), daemon=True)
-        t.start()
-    except Exception as _e:
-        print(f"[TelemetryServer] Failed to start: {_e}")
-
-# Use a module-level sentinel so this only fires once per process lifetime
-if not getattr(st, '_telemetry_server_launched', False):
-    _start_telemetry_server()
-    st._telemetry_server_launched = True
+# ── Telemetry server is managed independently by Kubernetes ──
 
 from dash_utils import (
     get_available_scenarios, scenario_description,

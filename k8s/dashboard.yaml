@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: cloudroute-dashboard:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: REDIS_HOST
+          value: "redis"
+        ports:
+        - containerPort: 8501
+        volumeMounts:
+        - name: outputs-volume
+          mountPath: /app/outputs
+      volumes:
+      - name: outputs-volume
+        persistentVolumeClaim:
+          claimName: cloudroute-outputs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+spec:
+  type: LoadBalancer
+  selector:
+    app: dashboard
+  ports:
+    - protocol: TCP
+      port: 8501
+      targetPort: 8501

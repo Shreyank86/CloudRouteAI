@@ -1,144 +1,115 @@
 import time
-import threading
 import json
 import os
-
-# Temp file path shared between the FastAPI thread and Streamlit reads
-_STORAGE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".telemetry_cache.json")
-_lock = threading.Lock()
-
+import redis
+from datetime import datetime
 
 # Idle threshold (in Mbps) below which we retain the last known active telemetry
 IDLE_THRESHOLD_MBPS = 2.0
 
-
-def _read_file():
-    """Read the JSON cache file, returning empty dict on FileNotFoundError, None on other errors."""
-    for i in range(10):
-        try:
-            with open(_STORAGE_FILE, "r") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}
-        except (PermissionError, json.JSONDecodeError):
-            time.sleep(0.05)
-        except Exception:
-            time.sleep(0.05)
-    return None
-
-
-def _write_file(data: dict):
-    """Write the client dict to the JSON cache file atomically with retries on lock collision."""
-    tmp = _STORAGE_FILE + ".tmp"
-    for i in range(10):
-        try:
-            with open(tmp, "w") as f:
-                json.dump(data, f)
-            os.replace(tmp, _STORAGE_FILE)
-            return True
-        except PermissionError:
-            time.sleep(0.05)
-        except Exception:
-            time.sleep(0.05)
-    return False
-
-
 class TelemetryStorage:
     """
-    Thread-safe telemetry store backed by a local JSON file.
-    Using a file ensures Streamlit re-runs (new thread contexts) always
-    see the data written by the FastAPI request handler thread.
+    Thread-safe telemetry store backed by Redis.
+    Using Redis ensures different Pods (API and Dashboard) can share data seamlessly.
     """
 
     def __init__(self):
-        # In-memory mirror kept in sync with the file
-        self._clients: dict = {}
-        self._load_from_file()
-
-    def _load_from_file(self):
-        with _lock:
-            data = _read_file()
-            if data is not None:
-                self._clients = data
+        redis_host = os.environ.get("REDIS_HOST", "localhost")
+        port_env = os.environ.get("REDIS_PORT", "6379")
+        if port_env.startswith("tcp://"):
+            redis_port = 6379
+        else:
+            try:
+                redis_port = int(port_env)
+            except ValueError:
+                redis_port = 6379
+        self.redis_client = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
 
     def update_client(self, device_id: str, payload: dict):
-        """Register / refresh a client record and persist to file."""
+        """Register / refresh a client record and persist to Redis."""
         total_throughput = round(float(payload.get("total_throughput_mbps", 0.0)), 2)
         upload_rate = round(float(payload.get("upload_rate_mbps", 0.0)), 2)
         download_rate = round(float(payload.get("download_rate_mbps", 0.0)), 2)
         active_connections = int(payload.get("active_connections", 0))
 
-        with _lock:
-            # Load current state first to check previous values
-            data = _read_file()
-            if data is not None:
-                self._clients = data
+        try:
+            prev_record_str = self.redis_client.hget("telemetry_clients", device_id)
+            if prev_record_str:
+                prev_record = json.loads(prev_record_str)
+                if total_throughput < IDLE_THRESHOLD_MBPS:
+                    prev_throughput = prev_record.get("total_throughput_mbps", 0.0)
+                    if prev_throughput >= IDLE_THRESHOLD_MBPS:
+                        total_throughput = prev_throughput
+                        upload_rate = prev_record.get("upload_rate_mbps", 0.0)
+                        download_rate = prev_record.get("download_rate_mbps", 0.0)
+                        active_connections = prev_record.get("active_connections", 0)
+        except redis.RedisError:
+            pass
 
-            prev_record = self._clients.get(device_id)
-            if prev_record and total_throughput < IDLE_THRESHOLD_MBPS:
-                # If we have a previous record and it was above the active threshold,
-                # retain the previous active metrics instead of dropping to 0.x.
-                prev_throughput = prev_record.get("total_throughput_mbps", 0.0)
-                if prev_throughput >= IDLE_THRESHOLD_MBPS:
-                    total_throughput = prev_throughput
-                    upload_rate = prev_record.get("upload_rate_mbps", 0.0)
-                    download_rate = prev_record.get("download_rate_mbps", 0.0)
-                    active_connections = prev_record.get("active_connections", 0)
+        raw_ts = payload.get("timestamp", time.time())
+        if isinstance(raw_ts, (int, float)):
+            ts_str = datetime.fromtimestamp(raw_ts).isoformat()
+        else:
+            ts_str = str(raw_ts)
 
-            from datetime import datetime
-            raw_ts = payload.get("timestamp", time.time())
-            if isinstance(raw_ts, (int, float)):
-                ts_str = datetime.fromtimestamp(raw_ts).isoformat()
-            else:
-                ts_str = str(raw_ts)
-
-            record = {
-                "device_id": device_id,
-                "timestamp": ts_str,
-                "bytes_sent": payload.get("bytes_sent", 0),
-                "bytes_received": payload.get("bytes_received", 0),
-                "upload_rate_mbps": upload_rate,
-                "download_rate_mbps": download_rate,
-                "total_throughput_mbps": total_throughput,
-                "active_connections": active_connections,
-                "last_seen": datetime.now().isoformat(),
-            }
-            self._clients[device_id] = record
-            _write_file(self._clients)
+        record = {
+            "device_id": device_id,
+            "timestamp": ts_str,
+            "bytes_sent": payload.get("bytes_sent", 0),
+            "bytes_received": payload.get("bytes_received", 0),
+            "upload_rate_mbps": upload_rate,
+            "download_rate_mbps": download_rate,
+            "total_throughput_mbps": total_throughput,
+            "active_connections": active_connections,
+            "last_seen": datetime.now().isoformat(),
+        }
+        
+        try:
+            self.redis_client.hset("telemetry_clients", device_id, json.dumps(record))
+        except redis.RedisError as e:
+            print(f"[TelemetryStorage] Redis Error: {e}")
 
     def get_active_clients(self, timeout_sec: float = 600.0) -> list:
         """Return list of clients seen within timeout_sec, pruning stale ones."""
-        from datetime import datetime
         now_dt = datetime.now()
-        # Always reload from file so Streamlit picks up fresh data
-        with _lock:
-            data = _read_file()
-            if data is not None:
-                self._clients = data
-            stale = []
-            for k, v in self._clients.items():
-                ls = v.get("last_seen", 0)
+        active_clients = []
+        stale_devices = []
+
+        try:
+            all_clients = self.redis_client.hgetall("telemetry_clients")
+            for device_id, record_str in all_clients.items():
+                record = json.loads(record_str)
+                ls = record.get("last_seen", 0)
+                is_stale = False
+                
                 if isinstance(ls, str):
                     try:
                         ls_time = datetime.fromisoformat(ls)
                         if (now_dt - ls_time).total_seconds() > timeout_sec:
-                            stale.append(k)
+                            is_stale = True
                     except ValueError:
-                        stale.append(k)
+                        is_stale = True
                 else:
                     if time.time() - float(ls) > timeout_sec:
-                        stale.append(k)
-            for k in stale:
-                del self._clients[k]
-            if stale:
-                _write_file(self._clients)
-            return [v.copy() for v in self._clients.values()]
+                        is_stale = True
+                
+                if is_stale:
+                    stale_devices.append(device_id)
+                else:
+                    active_clients.append(record)
+                    
+            if stale_devices:
+                self.redis_client.hdel("telemetry_clients", *stale_devices)
+                
+        except redis.RedisError as e:
+            print(f"[TelemetryStorage] Redis Error: {e}")
+
+        return active_clients
 
     def get_aggregated_throughput(self, timeout_sec: float = 600.0) -> float:
         """Compute total throughput across all active clients."""
         active = self.get_active_clients(timeout_sec)
-        return sum(c["total_throughput_mbps"] for c in active)
-
+        return sum(c.get("total_throughput_mbps", 0.0) for c in active)
 
 # Global singleton
 storage = TelemetryStorage()
