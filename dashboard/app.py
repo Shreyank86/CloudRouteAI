@@ -40,12 +40,10 @@ if "tab" in st.query_params:
         "dashboard": "🌐 Global Network Ops",
         "topology": "🗺️ Topology Lab",
         "reports": "📋 Reports",
-        "devices": "🗺️ Topology Lab",
+        "devices": "🖥️ Devices",
     }
     if selected_tab in tab_query_map:
         st.session_state["active_tab_label"] = tab_query_map[selected_tab]
-        if selected_tab == "devices":
-            st.toast("🖥️ Devices inventory view is under construction. Please use Topology Lab for active routing details.", icon="ℹ️")
     del st.query_params["tab"]
 
 # Telemetry server is now started at module-level above (before any session).
@@ -84,13 +82,14 @@ with st.sidebar:
     dash_active = "cn-nav-active" if active_tab == "🌐 Global Network Ops" else ""
     topo_active = "cn-nav-active" if active_tab == "🗺️ Topology Lab" else ""
     rep_active = "cn-nav-active" if active_tab == "📋 Reports" else ""
+    dev_active = "cn-nav-active" if active_tab == "🖥️ Devices" else ""
 
     st.markdown(f'''
     <a href="/?tab=dashboard" target="_self" style="text-decoration: none;">
         <div class="cn-nav-item {dash_active}">📊 Dashboard</div>
     </a>
     <a href="/?tab=devices" target="_self" style="text-decoration: none;">
-        <div class="cn-nav-item">🖥️ Devices</div>
+        <div class="cn-nav-item {dev_active}">🖥️ Devices</div>
     </a>
     <a href="/?tab=topology" target="_self" style="text-decoration: none;">
         <div class="cn-nav-item {topo_active}">🗺️ Topology Lab</div>
@@ -155,6 +154,7 @@ def reset_topology_callback(tab_key):
                 pass
     tab_map = {
         "t0": "🌐 Global Network Ops",
+        "tdev": "🖥️ Devices",
         "t1": "🗺️ Topology Lab",
         "t2": "⚡ Simulation Lab",
         "t3": "📊 Performance Analytics",
@@ -175,14 +175,30 @@ def draw_global_header(tab_key):
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ── Real-Time KPI Cards ────────────────────────────────────────────────────
-    # If the Live Simulator has actually been stepped, use its live state.
-    # Otherwise fall back to the static simulated runtime_data file.
-    live_sim = st.session_state.get("live_sim")
-    use_live = live_sim is not None and live_sim.time_step > 0
+    # Fetch real-time client telemetry
+    import sys, os
+    _root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root_dir not in sys.path:
+        sys.path.insert(0, _root_dir)
+    try:
+        from telemetry.client_registry import get_registered_clients
+        active_clients = get_registered_clients(timeout=5.0)
+    except Exception:
+        active_clients = []
 
-    if use_live:
+    live_sim = st.session_state.get("live_sim")
+    sim_live = live_sim is not None and live_sim.time_step > 0
+
+    if active_clients:
+        # Real-time Client Metrics
+        total_thru = sum(c["total_throughput_mbps"] for c in active_clients)
+        avg_util = min(100.0, total_thru / 500.0 * 100) # heuristic load based on 500Mbps capacity
+        avg_loss = 0.0 # clients assume 0 loss unless reported
+        max_queue = min(100.0, avg_util * 1.2)
+        source_label = f"🔴 REAL-TIME  ·  {len(active_clients)} Clients"
+    elif sim_live:
         avg_loss, avg_util, total_thru, max_queue = live_sim.get_aggregate_metrics()
-        source_label = f"🔴 LIVE  ·  t = {live_sim.time_step * 2:.0f} s"
+        source_label = f"🔴 LIVE SIM  ·  t = {live_sim.time_step * 2:.0f} s"
     else:
         avg_loss, avg_util, total_thru, max_queue = get_summary_metrics(runtime_data, st.session_state.current_sim_time)
         source_label = "📁 Static (Simulated)"
@@ -203,15 +219,18 @@ def draw_global_header(tab_key):
 
 # Tabbed Interface
 tab_names = [
-    "🌐 Global Network Ops", "⚡ True LIVE Simulator", "🗺️ Topology Lab", "⚡ Simulation Lab", 
-    "📊 Performance Analytics", "🧠 Adaptive Intelligence", "🔍 Explainable AI (XAI)", "📋 Reports"
+    "🖥️ Devices", "⚡ True LIVE Simulator", "🗺️ Topology Lab", "⚡ Simulation Lab", 
+    "📊 Performance Analytics", "🧠 Adaptive Intelligence", "🔍 Explainable AI (XAI)", "📋 Reports", "🌐 Global Network Ops"
 ]
-tab0, tab6, tab1, tab2, tab3, tab4, tab_xai, tab5 = st.tabs(tab_names, key="active_tab_label", on_change="rerun")
+tab_dev, tab6, tab1, tab2, tab3, tab4, tab_xai, tab5, tab0 = st.tabs(tab_names)
+
+with tab_dev:
+    from devices_view import draw_devices_dashboard
+    draw_devices_dashboard()
 
 with tab0:
     draw_global_header("t0")
     te.section_header("Global Operations Center", "Real-time multi-data-center traffic movement and intelligent routing visualization.", icon="🌐")
-
     
     col_play, col_stop, col_spacer = st.columns([1, 1, 3])
     with col_play:
@@ -294,16 +313,54 @@ with tab5:
         decisions_data = safe_read_file("routing", "routing.json")
         costs_data = safe_read_file("ml", "costs.json")
 
+        import json
+        import pandas as pd
+
+        def json_to_csv(json_str, file_type):
+            if not json_str: return ""
+            try:
+                data = json.loads(json_str)
+                if file_type == "runtime" and "snapshots" in data:
+                    rows = []
+                    for snap in data["snapshots"]:
+                        ts = snap.get("timestamp")
+                        for link in snap.get("links", []):
+                            row = {"timestamp": ts}
+                            row.update(link)
+                            rows.append(row)
+                    df = pd.DataFrame(rows)
+                elif file_type == "routing" and "decisions" in data:
+                    df = pd.DataFrame(data["decisions"])
+                else:
+                    # Generic flattening attempt
+                    if isinstance(data, list):
+                        df = pd.json_normalize(data)
+                    elif isinstance(data, dict):
+                        # Try to find the first list
+                        for k, v in data.items():
+                            if isinstance(v, list):
+                                df = pd.json_normalize(v)
+                                break
+                        else:
+                            df = pd.json_normalize([data])
+                return df.to_csv(index=False).encode('utf-8')
+            except Exception as e:
+                return ""
+
+        metrics_csv = json_to_csv(metrics_data, "runtime")
+        decisions_csv = json_to_csv(decisions_data, "routing")
+        costs_csv = json_to_csv(costs_data, "ml")
+
         if metrics_data:
             st.success("✅ **Active Simulation Datasets Found!**")
             
             dcols = st.columns(3)
             with dcols[0]:
                 st.download_button(
-                    label="📥 Runtime Metrics",
-                    data=metrics_data,
-                    file_name="runtime_metrics.json",
-                    mime="application/json",
+                    label="📥 Runtime Metrics (CSV)",
+                    data=metrics_csv,
+                    file_name="runtime_metrics.csv",
+                    mime="text/csv",
                     use_container_width=True,
                     key="dl_metrics"
                 )
@@ -311,10 +368,10 @@ with tab5:
 
             with dcols[1]:
                 st.download_button(
-                    label="📥 Routing Decisions",
-                    data=decisions_data if decisions_data else "{}",
-                    file_name="routing_decisions.json",
-                    mime="application/json",
+                    label="📥 Routing Decisions (CSV)",
+                    data=decisions_csv if decisions_csv else b"",
+                    file_name="routing_decisions.csv",
+                    mime="text/csv",
                     use_container_width=True,
                     key="dl_decisions"
                 )
@@ -322,10 +379,10 @@ with tab5:
 
             with dcols[2]:
                 st.download_button(
-                    label="📥 ML Cost Models",
-                    data=costs_data if costs_data else "{}",
-                    file_name="ml_costs.json",
-                    mime="application/json",
+                    label="📥 ML Cost Models (CSV)",
+                    data=costs_csv if costs_csv else b"",
+                    file_name="ml_costs.csv",
+                    mime="text/csv",
                     use_container_width=True,
                     key="dl_costs"
                 )

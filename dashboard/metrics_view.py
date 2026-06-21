@@ -60,6 +60,31 @@ def draw_metrics_chart(runtime_data):
         fig_health.update_layout(layout_health)
         st.plotly_chart(fig_health, use_container_width=True)
 
+    # ── Image Downloads ──────────────────────────────────────────────────────────
+    dl_col1, dl_col2 = st.columns(2)
+    with dl_col1:
+        try:
+            st.download_button(
+                "📥 Download Throughput Graph (PNG)",
+                data=fig_thru.to_image(format="png", width=1200, height=600, scale=2),
+                file_name="throughput_graph.png",
+                mime="image/png",
+                key="dl_thru_png"
+            )
+        except Exception:
+            pass
+    with dl_col2:
+        try:
+            st.download_button(
+                "📥 Download Health Graph (PNG)",
+                data=fig_health.to_image(format="png", width=1200, height=600, scale=2),
+                file_name="health_graph.png",
+                mime="image/png",
+                key="dl_health_png"
+            )
+        except Exception:
+            pass
+
 def draw_link_details(runtime_data, timestamp):
     """Display detailed metrics for all links at a specific timestamp."""
     st.markdown("### 🔗 Link Intelligence")

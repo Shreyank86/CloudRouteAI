@@ -374,55 +374,6 @@ def draw_live_dashboard():
         '''
         components.html(html_code, height=520)
 
-    # ── Real-Time Telemetry Dashboard (Aggregator & registry) ──
-    st.markdown("---")
-    st.markdown("### 🔌 Real-Time Distributed Telemetry Dashboard")
-    
-    tc1, tc2 = st.columns([1, 2])
-    
-    with tc1:
-        st.markdown("#### 📡 Traffic Demand Overview")
-        
-        st.markdown(f"""
-        <div style="background:rgba(5, 13, 26, 0.6); padding:1.5rem; border-radius:0.75rem; border:1px solid rgba(0, 212, 255, 0.15); border-left:4px solid var(--accent-1);">
-            <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.25rem;">Active Clients Count</div>
-            <div style="font-size:1.8rem; font-weight:700; color:var(--text-primary); margin-bottom:1rem;">{client_metrics['active_clients_count']}</div>
-            <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.25rem;">Total Aggregated Throughput</div>
-            <div style="font-size:1.8rem; font-weight:700; color:var(--accent-1); margin-bottom:1rem;">{client_metrics['total_throughput_mbps']:.2f} Mbps</div>
-            <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.25rem;">Current Load Level</div>
-            <div style="font-size:1.4rem; font-weight:700; color:{te.COLORS['success'] if 'Low' in client_metrics['load_level'] else (te.COLORS['warning'] if 'Medium' in client_metrics['load_level'] else te.COLORS['danger'])};">{client_metrics['load_level']}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with tc2:
-        st.markdown("#### 🖥️ Connected Client Agents")
-        
-        if active_clients:
-            table_rows = []
-            for c in active_clients:
-                ls = c["last_seen"]
-                if isinstance(ls, str):
-                    try:
-                        from datetime import datetime
-                        last_seen_sec = (datetime.now() - datetime.fromisoformat(ls)).total_seconds()
-                    except ValueError:
-                        last_seen_sec = 0.0
-                else:
-                    last_seen_sec = time.time() - float(ls)
-                table_rows.append(
-                    f"| `{c['device_id'][:8]}...` | **{c['total_throughput_mbps']:.2f} Mbps** | {c['upload_rate_mbps']} Mbps | {c['download_rate_mbps']} Mbps | {c['active_connections']} | {last_seen_sec:.1f}s ago |"
-                )
-            
-            st.markdown(
-                "| Device ID | Current Throughput | Upload Rate | Download Rate | Active Conn | Last Seen |\n"
-                "| :--- | :--- | :--- | :--- | :--- | :--- |\n" + 
-                "\n".join(table_rows),
-                unsafe_allow_html=True
-            )
-        else:
-            st.info("💡 **Awaiting Client Connections** — Run `python agent.py` on client devices to send telemetry.")
-
-        
     if st.session_state.is_running:
         sim.set_flow("flow_1", dc_map[src1], dc_map[dst1], v1)
         sim.set_flow("flow_2", dc_map[src2], dc_map[dst2], v2)

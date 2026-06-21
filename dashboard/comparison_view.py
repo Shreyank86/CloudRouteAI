@@ -86,6 +86,17 @@ def draw_comparison():
     fig.update_layout(layout)
     st.plotly_chart(fig, use_container_width=True)
 
+    try:
+        st.download_button(
+            "📥 Download Benchmark Graph (PNG)",
+            data=fig.to_image(format="png", width=1200, height=600, scale=2),
+            file_name="benchmark_graph.png",
+            mime="image/png",
+            key="dl_bench_png"
+        )
+    except Exception:
+        pass
+
 
 def draw_live_telemetry_chart():
     """Render persistent live session telemetry trends from the JSONL log file."""
@@ -188,13 +199,15 @@ def draw_live_telemetry_chart():
     fig.update_layout(layout)
     st.plotly_chart(fig, use_container_width=True)
 
-    # ── Raw log download ──────────────────────────────────────────────────────
-    import json
-    raw_json = json.dumps(records, indent=2)
-    st.download_button(
-        label="📥 Download Live Telemetry Log (JSON)",
-        data=raw_json,
-        file_name="live_telemetry_log.json",
-        mime="application/json",
-        key="dl_live_log",
-    )
+    # ── Graph image download ──────────────────────────────────────────────────────
+    try:
+        img_bytes = fig.to_image(format="png", width=1200, height=600, scale=2)
+        st.download_button(
+            label="📥 Download Graph (PNG)",
+            data=img_bytes,
+            file_name="live_telemetry_trends.png",
+            mime="image/png",
+            key="dl_live_log_img",
+        )
+    except Exception as e:
+        st.warning("⚠️ Image export requires `kaleido` package. (Error: " + str(e) + ")")
